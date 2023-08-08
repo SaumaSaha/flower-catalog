@@ -10,17 +10,31 @@
         Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
         sans-serif;
 
-      font-size: 25px;
+      font-size: 20px;
     }
 
-    h1 {
+    .page-header {
+      margin: auto 0.5em;
       padding: 1em;
+      font-size: 1.5em;
       color: orange;
-      border: 1px solid black;
+      border-bottom: 1px solid black;
       text-align: center;
+    }
+
+    .flowers-list {
+      margin: 1em;
+      padding: 1em;
     }
   </style>
   <body>
-    <h1>Flower Catalog</h1>
+    <main>
+      <h1 class="page-header">Flower Catalog</h1>
+
+      <ul class="flowers-list">
+        <li><a href="#">Abeliophyllum</a></li>
+        <li><a href="#">Ageratum</a></li>
+      </ul>
+    </main>
   </body>
 </html>
