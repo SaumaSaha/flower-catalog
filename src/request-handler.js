@@ -1,10 +1,12 @@
 const fs = require("fs");
 
 const handle = (request, response) => {
-  const content = fs.readFileSync("./html/index.html", "utf-8");
-  response.setStatusCode(200);
-  response.setContent(content);
-  response.send();
+  fs.readFile("./html/index.html", { encoding: "utf-8" }, (error, data) => {
+    const statusCode = 200;
+    response.setStatusCode(statusCode);
+    response.setContent(data);
+    response.send();
+  });
 };
 
 module.exports = { handle };

@@ -15,10 +15,11 @@ const handleConnection = (socket) => {
 
 const main = () => {
   const server = net.createServer();
+  const port = 8000;
 
   server.on("connection", handleConnection);
 
-  server.listen(8000, () => {
+  server.listen(port, () => {
     console.log("Server started listening");
   });
 };
