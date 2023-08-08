@@ -1,5 +1,26 @@
+const net = require("node:net");
+const { createRequest } = require("./src/parser");
+const { Response } = require("./src/response");
+const { handle } = require("./src/request-handler");
+
+const handleConnection = (socket) => {
+  socket.setEncoding("utf-8");
+
+  socket.on("data", (data) => {
+    const request = createRequest(data);
+    const response = new Response(socket);
+    handle(request, response);
+  });
+};
+
 const main = () => {
-  console.log("Working");
+  const server = net.createServer();
+
+  server.on("connection", handleConnection);
+
+  server.listen(8000, () => {
+    console.log("Server started listening");
+  });
 };
 
 main();
