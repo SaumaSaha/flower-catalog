@@ -1,46 +1,35 @@
 const fs = require("fs");
 
-const read = (filePath, cb) => {
+const readFileAndSend = (filePath, response) => {
   fs.readFile(filePath, { encoding: "utf-8" }, (error, data) => {
     if (error) {
       console.error(error);
       return;
     }
 
-    cb(data);
+    const statusCode = 200;
+    response.setStatusCode(statusCode);
+    response.setContent(data);
+    response.send();
   });
 };
 
 const handleFavicon = (request, response) => {
-  response.setStatusCode(404);
+  const statusCode = 404;
+  response.setStatusCode(statusCode);
   response.send();
 };
 
 const handleHome = (request, response) => {
-  read("./html/index.html", (data) => {
-    const statusCode = 200;
-    response.setStatusCode(statusCode);
-    response.setContent(data);
-    response.send();
-  });
+  readFileAndSend("./html/index.html", response);
 };
 
 const handleAboutAbeliophyllum = (request, response) => {
-  read("./html/abeliophyllum.html", (data) => {
-    const statusCode = 200;
-    response.setStatusCode(statusCode);
-    response.setContent(data);
-    response.send();
-  });
+  readFileAndSend("./html/abeliophyllum.html", response);
 };
 
 const handleAboutAgeratum = (request, response) => {
-  read("./html/ageratum.html", (data) => {
-    const statusCode = 200;
-    response.setStatusCode(statusCode);
-    response.setContent(data);
-    response.send();
-  });
+  readFileAndSend("./html/ageratum.html", response);
 };
 
 const handle = (request, response) => {
