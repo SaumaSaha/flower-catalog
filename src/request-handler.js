@@ -1,5 +1,10 @@
 const fs = require("fs");
 
+const handleFavicon = (request, response) => {
+  response.setStatusCode(404);
+  response.send();
+};
+
 const handleHome = (request, response) => {
   fs.readFile("./html/index.html", { encoding: "utf-8" }, (error, data) => {
     const statusCode = 200;
@@ -43,6 +48,7 @@ const handle = (request, response) => {
       route: "/ageratum.html",
       handler: handleAboutAgeratum,
     },
+    { route: "/favicon.ico", handler: handleFavicon },
   ];
 
   const { handler } = routes.find(({ route }) => route === request.uri);
