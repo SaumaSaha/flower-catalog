@@ -1,12 +1,23 @@
 const fs = require("fs");
 
+const read = (filePath, cb) => {
+  fs.readFile(filePath, { encoding: "utf-8" }, (error, data) => {
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    cb(data);
+  });
+};
+
 const handleFavicon = (request, response) => {
   response.setStatusCode(404);
   response.send();
 };
 
 const handleHome = (request, response) => {
-  fs.readFile("./html/index.html", { encoding: "utf-8" }, (error, data) => {
+  read("./html/index.html", (data) => {
     const statusCode = 200;
     response.setStatusCode(statusCode);
     response.setContent(data);
@@ -15,20 +26,16 @@ const handleHome = (request, response) => {
 };
 
 const handleAboutAbeliophyllum = (request, response) => {
-  fs.readFile(
-    "./html/abeliophyllum.html",
-    { encoding: "utf-8" },
-    (error, data) => {
-      const statusCode = 200;
-      response.setStatusCode(statusCode);
-      response.setContent(data);
-      response.send();
-    }
-  );
+  read("./html/abeliophyllum.html", (data) => {
+    const statusCode = 200;
+    response.setStatusCode(statusCode);
+    response.setContent(data);
+    response.send();
+  });
 };
 
 const handleAboutAgeratum = (request, response) => {
-  fs.readFile("./html/ageratum.html", { encoding: "utf-8" }, (error, data) => {
+  read("./html/ageratum.html", (data) => {
     const statusCode = 200;
     response.setStatusCode(statusCode);
     response.setContent(data);
