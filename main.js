@@ -20,7 +20,7 @@ const main = () => {
   server.on("connection", handleConnection);
 
   server.listen(port, () => {
-    console.log("Server started listening");
+    console.log("Server started listening on ", port);
   });
 };
 
