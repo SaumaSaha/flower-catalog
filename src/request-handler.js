@@ -33,19 +33,19 @@ const handleAboutAgeratum = (request, response) => {
 
 const handle = (request, response) => {
   const routes = [
-    { route: new RegExp("^/$"), handler: handleHome },
-    { route: new RegExp("^/index.html$"), handler: handleHome },
+    { route: "/", handler: handleHome },
+    { route: "/index.html", handler: handleHome },
     {
-      route: new RegExp("^/abeliophyllum.html$"),
+      route: "/abeliophyllum.html",
       handler: handleAboutAbeliophyllum,
     },
     {
-      route: new RegExp("^/ageratum.html$"),
+      route: "/ageratum.html",
       handler: handleAboutAgeratum,
     },
   ];
 
-  const { handler } = routes.find(({ route }) => route.test(request.uri));
+  const { handler } = routes.find(({ route }) => route === request.uri);
 
   handler(request, response);
 };
