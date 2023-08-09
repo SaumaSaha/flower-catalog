@@ -3,7 +3,7 @@ module.exports = {
     es2022: true,
   },
   parserOptions: {
-    "ecmaVersion": "latest"
+    ecmaVersion: "latest",
   },
   rules: {
     "semi": ["error", "always"],
@@ -11,7 +11,7 @@ module.exports = {
     "curly": "error",
     "array-callback-return": ["error"],
     "no-cond-assign": ["error", "always"],
-    "max-len": ["error", { "code": 90 }],
+    "max-len": ["error", { code: 90 }],
     "no-unused-vars": "error",
     "eqeqeq": ["error", "always"],
     "comma-spacing": ["error"],
@@ -28,14 +28,13 @@ module.exports = {
     "new-cap": "error",
     "no-eval": "warn",
     "no-extra-semi": "warn",
-    "no-magic-numbers": ["warn", { ignoreArrayIndexes: true }],
     "no-nested-ternary": "warn",
     "no-plusplus": "warn",
     "no-undef-init": "warn",
     "no-unneeded-ternary": "error",
     "no-useless-escape": "warn",
     "prefer-const": "warn",
-    "key-spacing": ["error", { "afterColon": true }],
-    "no-multiple-empty-lines": "error"
-  }
+    "key-spacing": ["error", { afterColon: true }],
+    "no-multiple-empty-lines": "error",
+  },
 };
