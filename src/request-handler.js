@@ -29,6 +29,13 @@ const readFileAndSend = (filePath, response) => {
   });
 };
 
+const isValidUri = (uri) => {
+  const exists = fs.existsSync(`./resources${uri}`);
+  console.log(`./resources${uri}`, exists);
+
+  return exists;
+};
+
 const handlePageNotFound = (request, response) => {
   const statusCode = 404;
   response.setStatusCode(statusCode);
@@ -39,7 +46,7 @@ const handleHome = (request, response) => {
   readFileAndSend("./resources/pages/index.html", response);
 };
 
-const handleRequest = (request, response) => {
+const handleValidRequest = (request, response) => {
   const filePath = `./resources/${request.uri}`;
   readFileAndSend(filePath, response);
 };
@@ -49,7 +56,12 @@ const handle = (request, response) => {
     handleHome(request, response);
     return;
   }
-  handleRequest(request, response);
+  if (isValidUri(request.uri)) {
+    handleValidRequest(request, response);
+    return;
+  }
+
+  handlePageNotFound(request, response);
 };
 
 module.exports = { handle };
