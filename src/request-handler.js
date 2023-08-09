@@ -46,8 +46,16 @@ const handleAgeratum = (request, response) => {
   readFileAndSend("./html/ageratum.html", response);
 };
 
-const handleGroupOfFlowersImage = (request, response) => {
-  readImageAndSend("./images/freshorigins.jpg", response);
+const handleHomePageImage = (request, response) => {
+  readImageAndSend("./images/home-page-image.jpg", response);
+};
+
+const handleAbeliophyllumImage = (request, response) => {
+  readImageAndSend("./images/abeliophyllum-image.jpg", response);
+};
+
+const handleAgeratumImage = (request, response) => {
+  readImageAndSend("./images/ageratum-image.jpg", response);
 };
 
 const handle = (request, response) => {
@@ -61,7 +69,9 @@ const handle = (request, response) => {
       route: "/ageratum",
       handler: handleAgeratum,
     },
-    { route: "/home-page-image", handler: handleGroupOfFlowersImage },
+    { route: "/home-page-image", handler: handleHomePageImage },
+    { route: "/abeliophyllum-image", handler: handleAbeliophyllumImage },
+    { route: "/ageratum-image", handler: handleAgeratumImage },
     { route: ".*", handler: handlePageNotFound },
   ];
 
