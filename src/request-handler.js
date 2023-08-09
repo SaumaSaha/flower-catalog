@@ -4,6 +4,7 @@ const getContentType = (filePath) => {
   const CONTENT_TYPES = [
     { fileType: ".html", contentType: "text/html" },
     { fileType: ".jpg", contentType: "image/jpeg" },
+    { fileType: ".css", contentType: "text/css" },
   ];
 
   const { contentType } = CONTENT_TYPES.find(({ fileType }) => {
