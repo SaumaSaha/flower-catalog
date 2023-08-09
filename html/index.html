@@ -13,6 +13,13 @@
       font-size: 20px;
     }
 
+    .flex {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1em;
+    }
+
     .page-header {
       margin: auto 0.5em;
       padding: 0.5em;
@@ -32,13 +39,19 @@
     }
   </style>
   <body>
-    <main>
+    <header>
       <h1 class="page-header">Flower Catalog</h1>
-
-      <ul class="flowers-list">
-        <li><a href="abeliophyllum.html">Abeliophyllum</a></li>
-        <li><a href="ageratum.html">Ageratum</a></li>
-      </ul>
-    </main>
+    </header>
+    <article class="flex">
+      <figure>
+        <img src="/home-page-image" alt="group of flowers image" />
+      </figure>
+      <section class="content">
+        <ul class="flowers-list">
+          <li><a href="/abeliophyllum">Abeliophyllum</a></li>
+          <li><a href="/ageratum">Ageratum</a></li>
+        </ul>
+      </section>
+    </article>
   </body>
 </html>

@@ -25,7 +25,7 @@ class Response {
   }
 
   setContent(content) {
-    this.#content = content + "\n";
+    this.#content = content;
   }
 
   #getStatusMessage() {
@@ -42,7 +42,7 @@ class Response {
   #formatResponse(statusMessage, headers) {
     return `${this.#protocol}/${this.#version} ${
       this.#statusCode
-    } ${statusMessage}\r\n${headers}\r\n\n${this.#content}`;
+    } ${statusMessage}\r\n${headers}\r\n\n`;
   }
 
   send() {
@@ -51,6 +51,7 @@ class Response {
     const response = this.#formatResponse(statusMessage, headers);
 
     this.#socket.write(response);
+    this.#socket.write(this.#content);
     this.#socket.end();
   }
 }
