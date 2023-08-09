@@ -1,20 +1,19 @@
 const fs = require("fs");
 
-const readFileAndSend = (filePath, response) => {
-  fs.readFile(filePath, { encoding: "utf-8" }, (error, data) => {
-    if (error) {
-      console.error(error);
-      return;
-    }
+const getContentType = (filePath) => {
+  const CONTENT_TYPES = [
+    { fileType: ".html", contentType: "text/html" },
+    { fileType: ".jpg", contentType: "image/jpeg" },
+  ];
 
-    const statusCode = 200;
-    response.setStatusCode(statusCode);
-    response.setContent(data);
-    response.send();
+  const { contentType } = CONTENT_TYPES.find(({ fileType }) => {
+    return filePath.endsWith(fileType);
   });
+
+  return contentType;
 };
 
-const readImageAndSend = (filePath, response) => {
+const readFileAndSend = (filePath, response) => {
   fs.readFile(filePath, (error, data) => {
     if (error) {
       console.error(error);
@@ -22,8 +21,10 @@ const readImageAndSend = (filePath, response) => {
     }
 
     const statusCode = 200;
+    const contentType = getContentType(filePath);
+
     response.setStatusCode(statusCode);
-    response.setContent(data);
+    response.setContent(data, contentType);
     response.send();
   });
 };
@@ -35,43 +36,44 @@ const handlePageNotFound = (request, response) => {
 };
 
 const handleHome = (request, response) => {
-  readFileAndSend("./html/index.html", response);
+  readFileAndSend("./resources/html/index.html", response);
 };
 
 const handleAbeliophyllum = (request, response) => {
-  readFileAndSend("./html/abeliophyllum.html", response);
+  readFileAndSend("./resources/html/abeliophyllum.html", response);
 };
 
 const handleAgeratum = (request, response) => {
-  readFileAndSend("./html/ageratum.html", response);
+  readFileAndSend("./resources/html/ageratum.html", response);
 };
 
 const handleHomePageImage = (request, response) => {
-  readImageAndSend("./images/home-page-image.jpg", response);
+  readFileAndSend("./resources/images/home-page-image.jpg", response);
 };
 
 const handleAbeliophyllumImage = (request, response) => {
-  readImageAndSend("./images/abeliophyllum-image.jpg", response);
+  readFileAndSend("./resources/images/abeliophyllum-image.jpg", response);
 };
 
 const handleAgeratumImage = (request, response) => {
-  readImageAndSend("./images/ageratum-image.jpg", response);
+  readFileAndSend("./resources/images/ageratum-image.jpg", response);
 };
 
 const handle = (request, response) => {
+  console.log(request);
   const routes = [
     { route: "/", handler: handleHome },
     {
-      route: "/abeliophyllum",
+      route: "/abeliophyllum.html",
       handler: handleAbeliophyllum,
     },
     {
-      route: "/ageratum",
+      route: "/ageratum.html",
       handler: handleAgeratum,
     },
-    { route: "/home-page-image", handler: handleHomePageImage },
-    { route: "/abeliophyllum-image", handler: handleAbeliophyllumImage },
-    { route: "/ageratum-image", handler: handleAgeratumImage },
+    { route: "/home-page-image.jpg", handler: handleHomePageImage },
+    { route: "/abeliophyllum-image.jpg", handler: handleAbeliophyllumImage },
+    { route: "/ageratum-image.jpg", handler: handleAgeratumImage },
     { route: ".*", handler: handlePageNotFound },
   ];
 
