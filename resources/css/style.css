@@ -40,4 +40,5 @@
 
 .flowers-list * {
   color: blue;
+  text-decoration: none;
 }

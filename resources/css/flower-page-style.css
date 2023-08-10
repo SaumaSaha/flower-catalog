@@ -16,6 +16,11 @@
   text-align: center;
 }
 
+.back-button {
+  font-size: 25px;
+  text-decoration: none;
+}
+
 .page-content {
   margin: 0.5em;
   padding: 1em;

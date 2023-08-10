@@ -7,9 +7,10 @@ const STATUS_CODES = {
 
 const getContentType = (filePath) => {
   const CONTENT_TYPES = {
-    html: "text/html",
-    jpg: "image/jpeg",
-    css: "text/css",
+    html: { contentType: "text/html", contentDisposition: "inline" },
+    jpg: { contentType: "image/jpeg", contentDisposition: "inline" },
+    css: { contentType: "text/css", contentDisposition: "inline" },
+    pdf: { contentType: "application/pdf", contentDisposition: "attachment" },
   };
 
   const extension = filePath.split(".").at(-1);
@@ -21,6 +22,9 @@ const isValidUri = (uri) => !uri.includes("..");
 
 const handlePageNotFound = (request, response) => {
   response.setStatusCode(STATUS_CODES.notFound);
+  response.setContent(`${request.uri} Not Found`);
+  response.addHeader("Content-Type", "text/plain");
+  response.addHeader("Content-Disposition", "inline");
   response.send();
 };
 
@@ -31,16 +35,18 @@ const generateFilePath = (uri) => {
 const readFileAndSend = (request, response) => {
   const filePath = generateFilePath(request.uri);
 
-  fs.readFile(filePath, (error, data) => {
+  fs.readFile(filePath, (error, content) => {
     if (error) {
       handlePageNotFound(request, response);
       return;
     }
 
-    const contentType = getContentType(filePath);
+    const { contentType, contentDisposition } = getContentType(filePath);
 
     response.setStatusCode(STATUS_CODES.ok);
-    response.setContent(data, contentType);
+    response.setContent(content);
+    response.addHeader("Content-Type", contentType);
+    response.addHeader("Content-Disposition", contentDisposition);
     response.send();
   });
 };

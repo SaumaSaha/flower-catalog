@@ -2,36 +2,38 @@ class Response {
   #socket;
   #statusCode;
   #content;
-  #contentType;
   #protocol;
   #version;
+  #headers;
 
   constructor(socket, protocol = "HTTP", version = "1.1") {
     this.#socket = socket;
     this.#statusCode = 200;
     this.#content = "";
-    this.#contentType = "text/html";
     this.#protocol = protocol;
     this.#version = version;
+    this.#headers = [];
   }
 
-  #getDefaultHeader() {
+  #getHeaders() {
     const contentLength = this.#content.length;
     const date = new Date().toGMTString();
-    const contentLengthHeader = `Content-Length: ${contentLength}`;
-    const dateHeader = `Date: ${date}`;
-    const contentTypeHeader = `Content-Type: ${this.#contentType}`;
+    this.addHeader("Content-Length", contentLength);
+    this.addHeader("Date", date);
 
-    return [contentLengthHeader, dateHeader, contentTypeHeader].join("\r\n");
+    return this.#headers.join("\r\n");
   }
 
   setStatusCode(statusCode) {
     this.#statusCode = statusCode;
   }
 
-  setContent(content, contentType) {
+  setContent(content) {
     this.#content = content;
-    this.#contentType = contentType;
+  }
+
+  addHeader(key, value) {
+    this.#headers.push(`${key}: ${value}`);
   }
 
   #getStatusMessage() {
@@ -53,7 +55,7 @@ class Response {
 
   send() {
     const statusMessage = this.#getStatusMessage();
-    const headers = this.#getDefaultHeader();
+    const headers = this.#getHeaders();
     const response = this.#formatResponse(statusMessage, headers);
 
     this.#socket.write(response);
