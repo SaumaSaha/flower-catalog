@@ -26,7 +26,6 @@
 .page-content {
   margin: 0.5em;
   padding: 1em;
-  justify-content: flex-start;
 }
 
 .flower-image {
@@ -41,4 +40,8 @@
 .flowers-list * {
   color: blue;
   text-decoration: none;
+}
+
+.hidden {
+  visibility: hidden;
 }

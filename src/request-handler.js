@@ -7,9 +7,11 @@ const STATUS_CODES = {
 
 const MIME_TYPES = {
   html: "text/html",
-  jpg: "image/jpeg",
+  jpg: "images/jpeg",
   css: "text/css",
   pdf: "application/pdf",
+  gif: "images/gif",
+  js: "text/javascript",
 };
 
 const getHeaders = (filePath) => {
@@ -17,6 +19,8 @@ const getHeaders = (filePath) => {
     html: { "Content-Type": MIME_TYPES.html },
     jpg: { "Content-Type": MIME_TYPES.jpg },
     css: { "Content-Type": MIME_TYPES.css },
+    gif: { "Content-Type": MIME_TYPES.gif },
+    js: { "Content-Type": MIME_TYPES.js },
     pdf: {
       "Content-Type": MIME_TYPES.pdf,
       "Content-Disposition": "attachment",
