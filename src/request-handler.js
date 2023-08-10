@@ -23,32 +23,18 @@ const getHeaders = (filePath) => {
 
 const isValidUri = (uri) => !uri.includes("..");
 
-const handlePageNotFound = (request, response) => {
-  response.setStatusCode(STATUS_CODES.notFound);
-  response.setContent(`${request.uri} Not Found`);
-  response.addHeader("Content-Type", "text/plain");
-  response.addHeader("Content-Disposition", "inline");
-  response.send();
-};
-
 const generateFilePath = (uri) => {
   return uri === "/" ? "./resources/pages/index.html" : `./resources${uri}`;
-};
-
-const addHeaders = (headers, response) => {
-  for (const key in headers) {
-    response.addHeader(key, headers[key]);
-  }
 };
 
 const sendSuccessResponse = (content, headers, response) => {
   response.setStatusCode(STATUS_CODES.ok);
   response.setContent(content);
-  addHeaders(headers, response);
+  response.addHeaders(headers);
   response.send();
 };
 
-const readFileAndSend = (request, response) => {
+const handleValidRequest = (request, response) => {
   const filePath = generateFilePath(request.uri);
 
   fs.readFile(filePath, (error, content) => {
@@ -63,9 +49,17 @@ const readFileAndSend = (request, response) => {
   });
 };
 
+const handlePageNotFound = (request, response) => {
+  response.setStatusCode(STATUS_CODES.notFound);
+  response.setContent(`${request.uri} Not Found`);
+  response.addHeader("Content-Type", "text/plain");
+  response.addHeader("Content-Disposition", "inline");
+  response.send();
+};
+
 const handle = (request, response) => {
   if (isValidUri(request.uri)) {
-    readFileAndSend(request, response);
+    handleValidRequest(request, response);
     return;
   }
 

@@ -1,3 +1,5 @@
+const CR_LF = "\r\n";
+
 class Response {
   #socket;
   #statusCode;
@@ -12,16 +14,24 @@ class Response {
     this.#content = "";
     this.#protocol = protocol;
     this.#version = version;
-    this.#headers = [];
+    this.#headers = {};
   }
 
   #getHeaders() {
     const contentLength = this.#content.length;
     const date = new Date().toGMTString();
-    this.addHeader("Content-Length", contentLength);
-    this.addHeader("Date", date);
+    
+    const headers = { "Content-Length": contentLength, "Date": date };
 
-    return this.#headers.join("\r\n");
+    this.addHeaders(headers);
+
+    return (
+      Object.entries(this.#headers)
+        .map(([key, value]) => {
+          return `${key}: ${value}`;
+        })
+        .join(CR_LF) + CR_LF.repeat(2)
+    );
   }
 
   setStatusCode(statusCode) {
@@ -32,8 +42,8 @@ class Response {
     this.#content = content;
   }
 
-  addHeader(key, value) {
-    this.#headers.push(`${key}: ${value}`);
+  addHeaders(headers) {
+    this.#headers = { ...this.#headers, ...headers };
   }
 
   #getStatusMessage() {
@@ -47,18 +57,19 @@ class Response {
     return statusMessages[this.#statusCode];
   }
 
-  #formatResponse(statusMessage, headers) {
+  #formatResponse(statusMessage) {
     return `${this.#protocol}/${this.#version} ${
       this.#statusCode
-    } ${statusMessage}\r\n${headers}\r\n\n`;
+    } ${statusMessage}\r\n`;
   }
 
   send() {
     const statusMessage = this.#getStatusMessage();
     const headers = this.#getHeaders();
-    const response = this.#formatResponse(statusMessage, headers);
+    const response = this.#formatResponse(statusMessage);
 
     this.#socket.write(response);
+    this.#socket.write(headers);
     this.#socket.write(this.#content, () => this.#socket.end());
   }
 }
