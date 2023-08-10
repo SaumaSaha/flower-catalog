@@ -5,17 +5,20 @@ const STATUS_CODES = {
   notFound: 404,
 };
 
-const getContentType = (filePath) => {
-  const CONTENT_TYPES = {
-    html: { contentType: "text/html", contentDisposition: "inline" },
-    jpg: { contentType: "image/jpeg", contentDisposition: "inline" },
-    css: { contentType: "text/css", contentDisposition: "inline" },
-    pdf: { contentType: "application/pdf", contentDisposition: "attachment" },
+const getHeaders = (filePath) => {
+  const HEADERS = {
+    html: { "Content-Type": "text/html" },
+    jpg: { "Content-Type": "image/jpeg" },
+    css: { "Content-Type": "text/css" },
+    pdf: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": "attachment",
+    },
   };
 
   const extension = filePath.split(".").at(-1);
 
-  return CONTENT_TYPES[extension];
+  return HEADERS[extension];
 };
 
 const isValidUri = (uri) => !uri.includes("..");
@@ -32,6 +35,19 @@ const generateFilePath = (uri) => {
   return uri === "/" ? "./resources/pages/index.html" : `./resources${uri}`;
 };
 
+const addHeaders = (headers, response) => {
+  for (const key in headers) {
+    response.addHeader(key, headers[key]);
+  }
+};
+
+const sendSuccessResponse = (content, headers, response) => {
+  response.setStatusCode(STATUS_CODES.ok);
+  response.setContent(content);
+  addHeaders(headers, response);
+  response.send();
+};
+
 const readFileAndSend = (request, response) => {
   const filePath = generateFilePath(request.uri);
 
@@ -41,13 +57,9 @@ const readFileAndSend = (request, response) => {
       return;
     }
 
-    const { contentType, contentDisposition } = getContentType(filePath);
+    const headers = getHeaders(filePath);
 
-    response.setStatusCode(STATUS_CODES.ok);
-    response.setContent(content);
-    response.addHeader("Content-Type", contentType);
-    response.addHeader("Content-Disposition", contentDisposition);
-    response.send();
+    sendSuccessResponse(content, headers, response);
   });
 };
 

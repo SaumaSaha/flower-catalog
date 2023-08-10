@@ -59,8 +59,7 @@ class Response {
     const response = this.#formatResponse(statusMessage, headers);
 
     this.#socket.write(response);
-    this.#socket.write(this.#content);
-    this.#socket.end();
+    this.#socket.write(this.#content, () => this.#socket.end());
   }
 }
 
