@@ -5,13 +5,20 @@ const STATUS_CODES = {
   notFound: 404,
 };
 
+const MIME_TYPES = {
+  html: "text/html",
+  jpg: "image/jpeg",
+  css: "text/css",
+  pdf: "application/pdf",
+};
+
 const getHeaders = (filePath) => {
   const HEADERS = {
-    html: { "Content-Type": "text/html" },
-    jpg: { "Content-Type": "image/jpeg" },
-    css: { "Content-Type": "text/css" },
+    html: { "Content-Type": MIME_TYPES.html },
+    jpg: { "Content-Type": MIME_TYPES.jpg },
+    css: { "Content-Type": MIME_TYPES.css },
     pdf: {
-      "Content-Type": "application/pdf",
+      "Content-Type": MIME_TYPES.pdf,
       "Content-Disposition": "attachment",
     },
   };
@@ -21,21 +28,23 @@ const getHeaders = (filePath) => {
   return HEADERS[extension];
 };
 
-const isValidUri = (uri) => !uri.includes("..");
+const isValidUrl = (url) => !url.includes("..");
 
-const generateFilePath = (uri) => {
-  return uri === "/" ? "./resources/pages/index.html" : `./resources${uri}`;
+const generateFilePath = (url) => {
+  return url === "/" ? "./resources/pages/index.html" : `./resources${url}`;
 };
 
-const sendSuccessResponse = (content, headers, response) => {
-  response.setStatusCode(STATUS_CODES.ok);
-  response.setContent(content);
-  response.addHeaders(headers);
-  response.send();
+const handlePageNotFound = (request, response) => {
+  const content = `${request.url} Not Found`;
+  response.writeHead(200, {
+    "Content-length": content.length,
+    "Content-Type": "text/plain",
+  });
+  response.end(content);
 };
 
 const handleValidRequest = (request, response) => {
-  const filePath = generateFilePath(request.uri);
+  const filePath = generateFilePath(request.url);
 
   fs.readFile(filePath, (error, content) => {
     if (error) {
@@ -44,21 +53,19 @@ const handleValidRequest = (request, response) => {
     }
 
     const headers = getHeaders(filePath);
+    console.log(headers);
 
-    sendSuccessResponse(content, headers, response);
+    response.writeHead(STATUS_CODES.ok, {
+      ...headers,
+      "Content-length": content.length,
+    });
+
+    response.end(content);
   });
 };
 
-const handlePageNotFound = (request, response) => {
-  response.setStatusCode(STATUS_CODES.notFound);
-  response.setContent(`${request.uri} Not Found`);
-  response.addHeader("Content-Type", "text/plain");
-  response.addHeader("Content-Disposition", "inline");
-  response.send();
-};
-
 const handle = (request, response) => {
-  if (isValidUri(request.uri)) {
+  if (isValidUrl(request.url)) {
     handleValidRequest(request, response);
     return;
   }
