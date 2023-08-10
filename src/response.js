@@ -20,18 +20,16 @@ class Response {
   #getHeaders() {
     const contentLength = this.#content.length;
     const date = new Date().toGMTString();
-    
+
     const headers = { "Content-Length": contentLength, "Date": date };
 
     this.addHeaders(headers);
 
-    return (
-      Object.entries(this.#headers)
-        .map(([key, value]) => {
-          return `${key}: ${value}`;
-        })
-        .join(CR_LF) + CR_LF.repeat(2)
-    );
+    return Object.entries(this.#headers)
+      .map(([key, value]) => {
+        return `${key}: ${value}`;
+      })
+      .join(CR_LF);
   }
 
   setStatusCode(statusCode) {
@@ -57,19 +55,18 @@ class Response {
     return statusMessages[this.#statusCode];
   }
 
-  #formatResponse(statusMessage) {
+  #formatResponseHead(statusMessage, headers) {
     return `${this.#protocol}/${this.#version} ${
       this.#statusCode
-    } ${statusMessage}\r\n`;
+    } ${statusMessage}${CR_LF}${headers}${CR_LF.repeat(2)}`;
   }
 
   send() {
     const statusMessage = this.#getStatusMessage();
     const headers = this.#getHeaders();
-    const response = this.#formatResponse(statusMessage);
+    const responseHead = this.#formatResponseHead(statusMessage, headers);
 
-    this.#socket.write(response);
-    this.#socket.write(headers);
+    this.#socket.write(responseHead);
     this.#socket.write(this.#content, () => this.#socket.end());
   }
 }
