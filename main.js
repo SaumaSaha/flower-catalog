@@ -1,5 +1,3 @@
-const { handle } = require("./src/request-handler");
-
 const http = require("node:http");
 const { handle } = require("./src/request-handler");
 

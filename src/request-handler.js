@@ -53,7 +53,6 @@ const handleValidRequest = (request, response) => {
     }
 
     const headers = getHeaders(filePath);
-    console.log(headers);
 
     response.writeHead(STATUS_CODES.ok, {
       ...headers,
