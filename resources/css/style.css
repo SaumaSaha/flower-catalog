@@ -35,11 +35,18 @@
 .flowers-list {
   margin: 1em;
   padding: 1em;
+  font-size: 1.5em;
+  list-style-type: none;
+  line-height: 1.5em;
 }
 
 .flowers-list * {
   color: blue;
   text-decoration: none;
+}
+
+#jug {
+  margin-left: 5em;
 }
 
 .hidden {
