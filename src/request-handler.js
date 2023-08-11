@@ -7,11 +7,16 @@ const STATUS_CODES = {
 
 const MIME_TYPES = {
   html: "text/html",
+  plain: "text/plain",
   jpg: "images/jpeg",
   css: "text/css",
   pdf: "application/pdf",
   gif: "images/gif",
   js: "text/javascript",
+};
+
+const CONTENT_DISPOSITION = {
+  attachment: "attachment",
 };
 
 const getHeaders = (filePath) => {
@@ -23,11 +28,11 @@ const getHeaders = (filePath) => {
     js: { "Content-Type": MIME_TYPES.js },
     pdf: {
       "Content-Type": MIME_TYPES.pdf,
-      "Content-Disposition": "attachment",
+      "Content-Disposition": CONTENT_DISPOSITION.attachment,
     },
   };
 
-  const extension = filePath.split(".").at(-1);
+  const extension = filePath.split(".").pop();
 
   return HEADERS[extension];
 };
@@ -40,10 +45,12 @@ const generateFilePath = (url) => {
 
 const handlePageNotFound = (request, response) => {
   const content = `${request.url} Not Found`;
-  response.writeHead(200, {
+  
+  response.writeHead(STATUS_CODES.notFound, {
     "Content-length": content.length,
-    "Content-Type": "text/plain",
+    "Content-Type": MIME_TYPES.plain,
   });
+
   response.end(content);
 };
 

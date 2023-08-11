@@ -4,7 +4,7 @@ const { handle } = require("./src/request-handler");
 const main = () => {
   const server = http.createServer(handle);
 
-  const port = 9000;
+  const port = 8000;
   server.listen(port, () => console.log("Server listening on", port));
 };
 
