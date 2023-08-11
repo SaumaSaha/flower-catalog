@@ -20,7 +20,7 @@ const CONTENT_DISPOSITION = {
 };
 
 const getHeaders = (filePath) => {
-  const HEADERS = {
+  const headers = {
     html: { "Content-Type": MIME_TYPES.html },
     jpg: { "Content-Type": MIME_TYPES.jpg },
     css: { "Content-Type": MIME_TYPES.css },
@@ -34,7 +34,7 @@ const getHeaders = (filePath) => {
 
   const extension = filePath.split(".").pop();
 
-  return HEADERS[extension];
+  return headers[extension];
 };
 
 const isValidUrl = (url) => !url.includes("..");
@@ -43,14 +43,17 @@ const generateFilePath = (url) => {
   return url === "/" ? "./resources/pages/index.html" : `./resources${url}`;
 };
 
+const sendHeaders = (headers, response) => {
+  Object.entries(headers).forEach(([headerName, headerValue]) => {
+    response.setHeader(headerName, headerValue);
+  });
+};
+
 const handlePageNotFound = (request, response) => {
   const content = `${request.url} Not Found`;
-  
-  response.writeHead(STATUS_CODES.notFound, {
-    "Content-length": content.length,
-    "Content-Type": MIME_TYPES.plain,
-  });
 
+  response.statusCode = STATUS_CODES.notFound;
+  sendHeaders({ "Content-Type": MIME_TYPES.plain });
   response.end(content);
 };
 
@@ -62,14 +65,10 @@ const handleValidRequest = (request, response) => {
       handlePageNotFound(request, response);
       return;
     }
-
     const headers = getHeaders(filePath);
 
-    response.writeHead(STATUS_CODES.ok, {
-      ...headers,
-      "Content-length": content.length,
-    });
-
+    response.statusCode = STATUS_CODES.ok;
+    sendHeaders(headers, response);
     response.end(content);
   });
 };
