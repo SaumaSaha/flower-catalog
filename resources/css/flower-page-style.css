@@ -24,12 +24,12 @@
 .page-content {
   margin: 0.5em;
   padding: 1em;
-  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .about {
   width: 35em;
-  margin: 2em 5em;
+  margin: 0 5em;
   font-weight: 300;
   word-spacing: 2px;
   line-height: 1.5em;
@@ -37,6 +37,7 @@
 
 .flower-image {
   width: 30em;
+  border-radius: 0.5em;
 }
 
 .flex {
