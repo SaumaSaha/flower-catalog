@@ -58,3 +58,8 @@ fieldset {
 #submit-button {
   width: 20%;
 }
+
+#comments > * {
+  display: flex;
+  gap: 2em;
+}

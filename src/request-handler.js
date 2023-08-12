@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { createCommentsElement } = require("./html-generator");
 
 const STATUS_CODES = {
   ok: 200,
@@ -39,14 +40,57 @@ const getHeaders = (filePath) => {
 
 const isValidUrl = (url) => !url.includes("..");
 
+const isGuestBookRequest = (url) => url === "/pages/guest-book.html";
+
+const isRequestForComment = (url) => url.includes("/comment?");
+
 const generateFilePath = (url) => {
   return url === "/" ? "./resources/pages/index.html" : `./resources${url}`;
 };
 
+const getQueryParams = (url) => {
+  const queryString = url.split("?").pop();
+
+  return new URLSearchParams(queryString);
+};
+
 const sendHeaders = (headers, response) => {
   Object.entries(headers).forEach(([headerName, headerValue]) => {
-    console.log(response);
     response.setHeader(headerName, headerValue);
+  });
+};
+
+const sendRedirect = (request, response) => {
+  response.writeHead(302, { location: "/pages/guest-book.html" });
+  response.end();
+};
+
+const handleComment = (request, response) => {
+  const queryParams = getQueryParams(request.url);
+  const comment = Object.fromEntries(queryParams.entries());
+  comment.date = new Date().toLocaleString();
+
+  fs.readFile("./comments.json", "utf-8", (err, data) => {
+    const comments = JSON.parse(data);
+    fs.writeFile(
+      "./comments.json",
+      JSON.stringify([...comments, comment]),
+      () => {}
+    );
+    sendRedirect(request, response);
+  });
+};
+
+const addCommentsAndSend = (content, request, response) => {
+  const element = `<article id="comments"></article>`;
+
+  fs.readFile("./comments.json", "utf-8", (err, data) => {
+    const comments = JSON.parse(data);
+    const commentsElement = createCommentsElement(comments);
+
+    const html = content.replace(element, commentsElement);
+    response.writeHead(200, { "content-type": "text/html" });
+    response.end(html);
   });
 };
 
@@ -56,6 +100,14 @@ const servePageNotFound = (request, response) => {
   response.statusCode = STATUS_CODES.notFound;
   sendHeaders({ "Content-Type": MIME_TYPES.plain }, response);
   response.end(content);
+};
+
+const serveGuestBook = (request, response) => {
+  fs.readFile(`./resources${request.url}`, "utf-8", (err, content) => {
+    if (err) return;
+
+    addCommentsAndSend(content, request, response);
+  });
 };
 
 const serveFile = (request, response) => {
@@ -74,8 +126,17 @@ const serveFile = (request, response) => {
   });
 };
 
-const handle = (request, response) => {
+const handleRoutes = (request, response) => {
   console.log(request.url);
+  if (isRequestForComment(request.url)) {
+    handleComment(request, response);
+    return;
+  }
+
+  if (isGuestBookRequest(request.url)) {
+    serveGuestBook(request, response);
+    return;
+  }
 
   if (isValidUrl(request.url)) {
     serveFile(request, response);
@@ -85,4 +146,4 @@ const handle = (request, response) => {
   servePageNotFound(request, response);
 };
 
-module.exports = { handle };
+module.exports = { handleRoutes };
