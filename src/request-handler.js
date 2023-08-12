@@ -74,6 +74,8 @@ const handleValidRequest = (request, response) => {
 };
 
 const handle = (request, response) => {
+  console.log(request.url);
+  
   if (isValidUrl(request.url)) {
     handleValidRequest(request, response);
     return;
