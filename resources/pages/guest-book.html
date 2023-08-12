@@ -1,8 +1,44 @@
 <html lang="en">
   <head>
     <title>Guest Book</title>
+    <link rel="stylesheet" href="/css/guest-book-style.css" />
   </head>
   <body>
-    <h1>Guest Book</h1>
+    <header>
+      <h1 class="page-header flex">
+        <span>
+          <a href="/" class="back-button"> << Back </a>
+        </span>
+        Guest Book
+      </h1>
+    </header>
+
+    <article class="page-content">
+      <header>
+        <h1>Leave a comment</h1>
+      </header>
+      <form action="/guest-book" id="comment-form">
+        <fieldset id="name-field">
+          <label for="name-text-box">Name</label>
+          <input type="text" name="name" id="name-text-box" />
+        </fieldset>
+        <fieldset id="comment-field">
+          <label for="comment-text-box">Comment</label>
+          <textarea
+            name="comment"
+            id="comment-text-box"
+            cols="25"
+            rows="4"
+          ></textarea>
+        </fieldset>
+        <input type="submit" value="Submit" id="submit-button" />
+      </form>
+
+      <section id="comment-display-area">
+        <header>
+          <h1>Comments</h1>
+        </header>
+      </section>
+    </article>
   </body>
 </html>

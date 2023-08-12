@@ -15,39 +15,46 @@
   color: orange;
   border-bottom: 1px solid black;
   text-align: center;
-}
-
-.back-button {
-  font-size: 25px;
-  text-decoration: none;
-}
-
-.page-content {
-  margin: 0.5em;
-  padding: 1em;
-  align-items: flex-start;
-}
-
-.about {
-  width: 35em;
-  margin: 0 5em;
-  font-weight: 300;
-  word-spacing: 2px;
-  line-height: 1.5em;
-}
-
-.flower-image {
-  width: 30em;
-  border-radius: 0.5em;
-}
-
-.flex {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 1em;
 }
 
-p {
-  margin-bottom: 1em;
+.page-content {
+  width: 30em;
+  margin: 0.5em;
+  padding: 0.5em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+#comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+#comment-form > * :nth-child(1) {
+  width: 40%;
+}
+
+fieldset {
+  border: none;
+}
+
+#name-field {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+#comment-field {
+  display: flex;
+  gap: 1em;
+}
+
+#submit-button {
+  width: 20%;
 }

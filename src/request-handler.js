@@ -45,24 +45,25 @@ const generateFilePath = (url) => {
 
 const sendHeaders = (headers, response) => {
   Object.entries(headers).forEach(([headerName, headerValue]) => {
+    console.log(response);
     response.setHeader(headerName, headerValue);
   });
 };
 
-const handlePageNotFound = (request, response) => {
+const servePageNotFound = (request, response) => {
   const content = `${request.url} Not Found`;
 
   response.statusCode = STATUS_CODES.notFound;
-  sendHeaders({ "Content-Type": MIME_TYPES.plain });
+  sendHeaders({ "Content-Type": MIME_TYPES.plain }, response);
   response.end(content);
 };
 
-const handleValidRequest = (request, response) => {
+const serveFile = (request, response) => {
   const filePath = generateFilePath(request.url);
 
   fs.readFile(filePath, (error, content) => {
     if (error) {
-      handlePageNotFound(request, response);
+      servePageNotFound(request, response);
       return;
     }
     const headers = getHeaders(filePath);
@@ -75,13 +76,13 @@ const handleValidRequest = (request, response) => {
 
 const handle = (request, response) => {
   console.log(request.url);
-  
+
   if (isValidUrl(request.url)) {
-    handleValidRequest(request, response);
+    serveFile(request, response);
     return;
   }
 
-  handlePageNotFound(request, response);
+  servePageNotFound(request, response);
 };
 
 module.exports = { handle };
