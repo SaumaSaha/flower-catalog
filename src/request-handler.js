@@ -60,38 +60,18 @@ const sendHeaders = (headers, response) => {
   });
 };
 
-const sendRedirect = (request, response) => {
+const sendRedirectToGuestBook = (request, response) => {
   response.writeHead(302, { location: "/pages/guest-book.html" });
   response.end();
 };
 
-const handleComment = (request, response) => {
+const handleComment = (request, response, commentsHandler) => {
   const queryParams = getQueryParams(request.url);
   const comment = Object.fromEntries(queryParams.entries());
   comment.date = new Date().toLocaleString();
 
-  fs.readFile("./comments.json", "utf-8", (err, data) => {
-    const comments = JSON.parse(data);
-    fs.writeFile(
-      "./comments.json",
-      JSON.stringify([...comments, comment]),
-      () => {}
-    );
-    sendRedirect(request, response);
-  });
-};
-
-const addCommentsAndSend = (content, request, response) => {
-  const element = `<article id="comments"></article>`;
-
-  fs.readFile("./comments.json", "utf-8", (err, data) => {
-    const comments = JSON.parse(data);
-    const commentsElement = createCommentsElement(comments);
-
-    const html = content.replace(element, commentsElement);
-    response.writeHead(200, { "content-type": "text/html" });
-    response.end(html);
-  });
+  commentsHandler.addComment(comment);
+  sendRedirectToGuestBook(request, response);
 };
 
 const servePageNotFound = (request, response) => {
@@ -102,11 +82,16 @@ const servePageNotFound = (request, response) => {
   response.end(content);
 };
 
-const serveGuestBook = (request, response) => {
-  fs.readFile(`./resources${request.url}`, "utf-8", (err, content) => {
-    if (err) return;
+const serveGuestBook = (request, response, commentsHandler) => {
+  const element = `<article id="comments"></article>`;
 
-    addCommentsAndSend(content, request, response);
+  const comments = commentsHandler.getComments();
+  const commentsElement = createCommentsElement(comments);
+
+  fs.readFile(`./resources${request.url}`, "utf-8", (err, content) => {
+    const html = content.replace(element, commentsElement);
+    response.writeHead(200, { "content-type": "text/html" });
+    response.end(html);
   });
 };
 
@@ -126,15 +111,15 @@ const serveFile = (request, response) => {
   });
 };
 
-const handleRoutes = (request, response) => {
+const handleRoutes = (request, response, commentsHandler) => {
   console.log(request.url);
   if (isRequestForComment(request.url)) {
-    handleComment(request, response);
+    handleComment(request, response, commentsHandler);
     return;
   }
 
   if (isGuestBookRequest(request.url)) {
-    serveGuestBook(request, response);
+    serveGuestBook(request, response, commentsHandler);
     return;
   }
 
