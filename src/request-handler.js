@@ -83,7 +83,7 @@ const servePageNotFound = (request, response) => {
 };
 
 const serveGuestBook = (request, response, commentsHandler) => {
-  const element = "<article id='comments'></article>";
+  const element = "All Comments";
 
   const comments = commentsHandler.getComments();
   const commentsElement = createCommentsElement(comments);
