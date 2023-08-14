@@ -83,7 +83,7 @@ const servePageNotFound = (request, response) => {
 };
 
 const serveGuestBook = (request, response, commentsHandler) => {
-  const element = `<article id="comments"></article>`;
+  const element = "<article id='comments'></article>";
 
   const comments = commentsHandler.getComments();
   const commentsElement = createCommentsElement(comments);
@@ -112,7 +112,6 @@ const serveFile = (request, response) => {
 };
 
 const handleRoutes = (request, response, commentsHandler) => {
-  console.log(request.url);
   if (isRequestForComment(request.url)) {
     handleComment(request, response, commentsHandler);
     return;

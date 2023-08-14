@@ -1,6 +1,6 @@
 const createCommentsElement = (comments) => {
-  const prefix = `<article id="comments">`;
-  const suffix = `</article>`;
+  const prefix = "<article id='comments'>";
+  const suffix = "</article>";
   const commentsElement = comments.map((comment) => {
     return `<p><span>${comment.date}</span>
             <span><strong>${comment.name}</strong></span>

@@ -8,10 +8,11 @@ const main = () => {
   const commentsHandler = new CommentsHandler(fs, commentsFilePath);
   commentsHandler.fetchComments();
 
-  const server = http.createServer((request, response) =>
-    handleRoutes(request, response, commentsHandler)
-  );
-  
+  const server = http.createServer((request, response) => {
+    console.log(request.url);
+    handleRoutes(request, response, commentsHandler);
+  });
+
   server.on("close", () => {
     console.log("Server closed");
     commentsHandler.storeComments();
@@ -19,7 +20,6 @@ const main = () => {
 
   const port = 8000;
   server.listen(port, () => console.log("Server listening on", port));
-
 
   // setTimeout(
   //   () => server.close(() => console.log("Server closed itself")),
