@@ -1,9 +1,14 @@
 const fs = require("fs");
 const { createCommentsElement } = require("./html-generator");
+const GUEST_BOOK_HTML = fs.readFileSync(
+  "./resources/pages/guest-book.html",
+  "utf-8"
+);
 
 const STATUS_CODES = {
   ok: 200,
   notFound: 404,
+  serverError: 500,
 };
 
 const MIME_TYPES = {
@@ -18,6 +23,7 @@ const MIME_TYPES = {
 
 const CONTENT_DISPOSITION = {
   attachment: "attachment",
+  inline: "inline",
 };
 
 const getHeaders = (filePath) => {
@@ -38,96 +44,74 @@ const getHeaders = (filePath) => {
   return headers[extension];
 };
 
-const isValidUrl = (url) => !url.includes("..");
+const sendResponse = (content, request, response) => {
+  const headers = getHeaders(request.url);
 
-const isGuestBookRequest = (url) => url === "/pages/guest-book.html";
-
-const isRequestForComment = (url) => url.includes("/comment?");
-
-const generateFilePath = (url) => {
-  return url === "/" ? "./resources/pages/index.html" : `./resources${url}`;
-};
-
-const getQueryParams = (url) => {
-  const queryString = url.split("?").pop();
-
-  return new URLSearchParams(queryString);
-};
-
-const sendHeaders = (headers, response) => {
-  Object.entries(headers).forEach(([headerName, headerValue]) => {
-    response.setHeader(headerName, headerValue);
+  Object.entries(headers).forEach(([name, value]) => {
+    response.setHeader(name, value);
   });
+
+  response.end(content);
 };
 
-const sendRedirectToGuestBook = (request, response) => {
+const handlePageNotFound = (request, response) => {
+  response.statusCode = STATUS_CODES.notFound;
+  response.end(`${request.url} Not Found`);
+};
+
+const handleInternalServerError = (_, response) => {
+  response.statusCode = STATUS_CODES.serverError;
+  response.end("Internal Server Error");
+};
+
+const getComment = (url) => {
+  const queryString = url.split("?").pop();
+  const queryParams = new URLSearchParams(queryString);
+
+  return Object.fromEntries(queryParams.entries());
+};
+
+const handleCommentRequest = (request, response, commentsHandler) => {
+  const comment = getComment(request.url);
+  comment.date = new Date().toLocaleString();
+
+  commentsHandler.addComment(comment);
+
   response.writeHead(302, { location: "/pages/guest-book.html" });
   response.end();
 };
 
-const handleComment = (request, response, commentsHandler) => {
-  const queryParams = getQueryParams(request.url);
-  const comment = Object.fromEntries(queryParams.entries());
-  comment.date = new Date().toLocaleString();
-
-  commentsHandler.addComment(comment);
-  sendRedirectToGuestBook(request, response);
-};
-
-const servePageNotFound = (request, response) => {
-  const content = `${request.url} Not Found`;
-
-  response.statusCode = STATUS_CODES.notFound;
-  sendHeaders({ "Content-Type": MIME_TYPES.plain }, response);
-  response.end(content);
-};
-
-const serveGuestBook = (request, response, commentsHandler) => {
-  const element = "All Comments";
+const handleGuestBookRequest = (request, response, commentsHandler) => {
+  const placeholder = "All Comments";
 
   const comments = commentsHandler.getComments();
   const commentsElement = createCommentsElement(comments);
+  const content = GUEST_BOOK_HTML.replace(placeholder, commentsElement);
 
-  fs.readFile(`./resources${request.url}`, "utf-8", (err, content) => {
-    const html = content.replace(element, commentsElement);
-    response.writeHead(200, { "content-type": "text/html" });
-    response.end(html);
-  });
+  sendResponse(content, request, response);
 };
 
-const serveFile = (request, response) => {
-  const filePath = generateFilePath(request.url);
+const handleHomeRequest = (_, response) => {
+  response.writeHead(302, { location: "/pages/index.html" });
+  response.end();
+};
+
+const handleFileRequest = (request, response) => {
+  const filePath = `./resources${request.url}`;
 
   fs.readFile(filePath, (error, content) => {
     if (error) {
-      servePageNotFound(request, response);
+      handleInternalServerError(request, response);
       return;
     }
-    const headers = getHeaders(filePath);
-
-    response.statusCode = STATUS_CODES.ok;
-    sendHeaders(headers, response);
-    response.end(content);
+    sendResponse(content, request, response);
   });
 };
 
-const handleRoutes = (request, response, commentsHandler) => {
-  if (!isValidUrl(request.url)) {
-    servePageNotFound(request, response);
-    return;
-  }
-
-  if (isRequestForComment(request.url)) {
-    handleComment(request, response, commentsHandler);
-    return;
-  }
-
-  if (isGuestBookRequest(request.url)) {
-    serveGuestBook(request, response, commentsHandler);
-    return;
-  }
-
-  serveFile(request, response);
+module.exports = {
+  handleFileRequest,
+  handleGuestBookRequest,
+  handleCommentRequest,
+  handlePageNotFound,
+  handleHomeRequest,
 };
-
-module.exports = { handleRoutes };
