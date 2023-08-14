@@ -1,14 +1,27 @@
-const isNotValidUrl = (url) => url.includes("..");
+const fs = require("fs");
 
-const isGuestBookRequest = (url) => url === "/pages/guest-book.html";
+const isGetRequest = (method) => method === "GET";
 
-const isRequestForComment = (url) => url.startsWith("/comment?");
+const isPostRequest = (method) => method === "POST";
 
-const isHomeRequest = (url) => url === "/";
+const isNotValidUrl = (request) => request.url.includes("..");
+
+const isGuestBookRequest = (request) =>
+  request.url === "/pages/guest-book.html" && isGetRequest(request.method);
+
+const isRequestForComment = (request) =>
+  request.url === "/pages/guest-book-entry" && isPostRequest(request.method);
+
+const isHomeRequest = (request) =>
+  request.url === "/" && isGetRequest(request.method);
+
+const isStaticPageRequest = (request) =>
+  fs.existsSync(`./resources${request.url}`) && isGetRequest(request.method);
 
 module.exports = {
   isNotValidUrl,
   isGuestBookRequest,
   isRequestForComment,
   isHomeRequest,
+  isStaticPageRequest,
 };

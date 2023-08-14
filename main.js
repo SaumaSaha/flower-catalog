@@ -9,7 +9,7 @@ const main = () => {
   commentsManager.fetchComments();
 
   const server = http.createServer((request, response) => {
-    console.log(request.url);
+    console.log(request.method, request.url);
     handleRoutes(request, response, commentsManager);
   });
 

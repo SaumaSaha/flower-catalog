@@ -59,26 +59,26 @@ const handlePageNotFound = (request, response) => {
   response.end(`${request.url} Not Found`);
 };
 
-const handleInternalServerError = (_, response) => {
-  response.statusCode = STATUS_CODES.serverError;
-  response.end("Internal Server Error");
-};
+const getComment = (data) => {
+  const params = new URLSearchParams(data);
 
-const getComment = (url) => {
-  const queryString = url.split("?").pop();
-  const queryParams = new URLSearchParams(queryString);
-
-  return Object.fromEntries(queryParams.entries());
+  return Object.fromEntries(params.entries());
 };
 
 const handleCommentRequest = (request, response, commentsHandler) => {
-  const comment = getComment(request.url);
-  comment.date = new Date().toLocaleString();
+  let requestBody = "";
 
-  commentsHandler.addComment(comment);
+  request.on("data", (data) => (requestBody += data));
 
-  response.writeHead(302, { location: "/pages/guest-book.html" });
-  response.end();
+  request.on("end", () => {
+    const comment = getComment(requestBody);
+    comment.date = new Date().toLocaleString();
+
+    commentsHandler.addComment(comment);
+
+    response.writeHead(303, { location: "/pages/guest-book.html" });
+    response.end();
+  });
 };
 
 const handleGuestBookRequest = (request, response, commentsHandler) => {
@@ -96,12 +96,12 @@ const handleHomeRequest = (_, response) => {
   response.end();
 };
 
-const handleFileRequest = (request, response) => {
+const handleStaticPageRequest = (request, response) => {
   const filePath = `./resources${request.url}`;
 
   fs.readFile(filePath, (error, content) => {
     if (error) {
-      handleInternalServerError(request, response);
+      handlePageNotFound(request, response);
       return;
     }
     sendResponse(content, request, response);
@@ -109,9 +109,8 @@ const handleFileRequest = (request, response) => {
 };
 
 module.exports = {
-  handleFileRequest,
+  handleStaticPageRequest,
   handleGuestBookRequest,
   handleCommentRequest,
-  handlePageNotFound,
   handleHomeRequest,
 };
