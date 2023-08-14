@@ -3,11 +3,13 @@ const {
   handleCommentRequest,
   handleGuestBookRequest,
   handleStaticPageRequest,
+  handleMethodNotAllowed,
   handleHomeRequest,
 } = require("./request-handler");
 
 const {
   isNotValidUrl,
+  isNotValidMethod,
   isRequestForComment,
   isGuestBookRequest,
   isHomeRequest,
@@ -17,6 +19,7 @@ const {
 const handleRoutes = (request, response, commentsHandler) => {
   const validators = [
     { validator: isNotValidUrl, handler: handlePageNotFound },
+    { validator: isNotValidMethod, handler: handleMethodNotAllowed },
     { validator: isRequestForComment, handler: handleCommentRequest },
     { validator: isGuestBookRequest, handler: handleGuestBookRequest },
     { validator: isHomeRequest, handler: handleHomeRequest },

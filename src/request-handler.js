@@ -9,6 +9,7 @@ const STATUS_CODES = {
   ok: 200,
   notFound: 404,
   serverError: 500,
+  methodNotAllowed: 405,
 };
 
 const MIME_TYPES = {
@@ -59,6 +60,16 @@ const handlePageNotFound = (request, response) => {
   response.end(`${request.url} Not Found`);
 };
 
+const handleMethodNotAllowed = (_, response) => {
+  response.statusCode = STATUS_CODES.methodNotAllowed;
+  response.end(`Method Not Found`);
+};
+
+const handleInternalServerError = (_, response) => {
+  response.statusCode = STATUS_CODES.methodNotAllowed;
+  response.end(`Internal Server Error`);
+};
+
 const getComment = (data) => {
   const params = new URLSearchParams(data);
 
@@ -101,7 +112,7 @@ const handleStaticPageRequest = (request, response) => {
 
   fs.readFile(filePath, (error, content) => {
     if (error) {
-      handlePageNotFound(request, response);
+      handleInternalServerError(request, response);
       return;
     }
     sendResponse(content, request, response);
@@ -113,4 +124,6 @@ module.exports = {
   handleGuestBookRequest,
   handleCommentRequest,
   handleHomeRequest,
+  handlePageNotFound,
+  handleMethodNotAllowed,
 };
