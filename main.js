@@ -13,18 +13,8 @@ const main = () => {
     handleRoutes(request, response, commentsHandler);
   });
 
-  server.on("close", () => {
-    console.log("Server closed");
-    commentsHandler.storeComments();
-  });
-
   const port = 8000;
   server.listen(port, () => console.log("Server listening on", port));
-
-  // setTimeout(
-  //   () => server.close(() => console.log("Server closed itself")),
-  //   10000
-  // );
 };
 
 main();

@@ -19,7 +19,7 @@ class CommentsHandler {
     });
   }
 
-  storeComments() {
+  #storeComments() {
     this.#fileSystem.writeFile(
       this.#filePath,
       JSON.stringify(this.#comments),
@@ -29,6 +29,7 @@ class CommentsHandler {
 
   addComment(comment) {
     this.#comments.unshift(comment);
+    this.#storeComments()
   }
 
   getComments() {

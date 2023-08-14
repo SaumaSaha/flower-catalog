@@ -59,6 +59,14 @@ fieldset {
   width: 20%;
 }
 
+#name-text-box {
+  padding: 0.5em;
+}
+
+#comment-text-box {
+  padding: 0.5em;
+}
+
 #comment-display-area {
   display: flex;
   flex-direction: column;

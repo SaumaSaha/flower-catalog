@@ -112,6 +112,11 @@ const serveFile = (request, response) => {
 };
 
 const handleRoutes = (request, response, commentsHandler) => {
+  if (!isValidUrl(request.url)) {
+    servePageNotFound(request, response);
+    return;
+  }
+
   if (isRequestForComment(request.url)) {
     handleComment(request, response, commentsHandler);
     return;
@@ -122,12 +127,7 @@ const handleRoutes = (request, response, commentsHandler) => {
     return;
   }
 
-  if (isValidUrl(request.url)) {
-    serveFile(request, response);
-    return;
-  }
-
-  servePageNotFound(request, response);
+  serveFile(request, response);
 };
 
 module.exports = { handleRoutes };
