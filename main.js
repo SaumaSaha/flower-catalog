@@ -11,14 +11,15 @@ const main = () => {
   const server = http.createServer((request, response) =>
     handleRoutes(request, response, commentsHandler)
   );
-
-  const port = 8000;
-  server.listen(port, () => console.log("Server listening on", port));
-
+  
   server.on("close", () => {
     console.log("Server closed");
     commentsHandler.storeComments();
   });
+
+  const port = 8000;
+  server.listen(port, () => console.log("Server listening on", port));
+
 
   // setTimeout(
   //   () => server.close(() => console.log("Server closed itself")),

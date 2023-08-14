@@ -59,6 +59,23 @@ fieldset {
   width: 20%;
 }
 
+#comment-display-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+#comment-header {
+  font-size: 25px;
+  border-bottom: 1px solid black;
+}
+
+#comments {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
 #comments > * {
   display: flex;
   gap: 2em;
