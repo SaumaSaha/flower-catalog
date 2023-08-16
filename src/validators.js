@@ -1,25 +1,20 @@
 const fs = require("fs");
 
 const isGetRequest = (method) => method === "GET";
-
 const isPostRequest = (method) => method === "POST";
 
-const isNotValidUrl = (request) =>
-  request.url.includes("..") || !fs.existsSync(`./resources${request.url}`);
+const isNotValidUrl = (request) => request.url.includes("..");
 
 const isNotValidMethod = (request) =>
   fs.existsSync(`./resources${request.url}`) && isPostRequest(request.method);
 
 const isGuestBookRequest = (request) =>
-  request.url === "/pages/guest-book.html" && isGetRequest(request.method);
+  request.url === "/pages/guest-book.html";
 
 const isRequestForComment = (request) =>
-  request.url === "/pages/guest-book-entry" && isPostRequest(request.method);
+  request.url === "/pages/guest-book-entry";
 
-const isHomeRequest = (request) =>
-  request.url === "/" && isGetRequest(request.method);
-
-const isStaticPageRequest = (request) => isGetRequest(request.method);
+const isHomeRequest = (request) => request.url === "/";
 
 module.exports = {
   isNotValidUrl,
@@ -27,5 +22,6 @@ module.exports = {
   isGuestBookRequest,
   isRequestForComment,
   isHomeRequest,
-  isStaticPageRequest,
+  isGetRequest,
+  isPostRequest,
 };

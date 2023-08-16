@@ -65,11 +65,6 @@ const handleMethodNotAllowed = (_, response) => {
   response.end(`Method Not Found`);
 };
 
-const handleInternalServerError = (_, response) => {
-  response.statusCode = STATUS_CODES.methodNotAllowed;
-  response.end(`Internal Server Error`);
-};
-
 const getComment = (data) => {
   const params = new URLSearchParams(data);
 
@@ -78,6 +73,10 @@ const getComment = (data) => {
 
 const handleCommentRequest = (request, response, commentsHandler) => {
   let requestBody = "";
+  const onCommentAdd = () => {
+    response.writeHead(303, { location: "/pages/guest-book.html" });
+    response.end();
+  };
 
   request.on("data", (data) => (requestBody += data));
 
@@ -85,10 +84,7 @@ const handleCommentRequest = (request, response, commentsHandler) => {
     const comment = getComment(requestBody);
     comment.date = new Date().toLocaleString();
 
-    commentsHandler.addComment(comment);
-
-    response.writeHead(303, { location: "/pages/guest-book.html" });
-    response.end();
+    commentsHandler.addComment(comment, onCommentAdd);
   });
 };
 
@@ -112,7 +108,7 @@ const handleStaticPageRequest = (request, response) => {
 
   fs.readFile(filePath, (error, content) => {
     if (error) {
-      handleInternalServerError(request, response);
+      handlePageNotFound(request, response);
       return;
     }
     sendResponse(content, request, response);

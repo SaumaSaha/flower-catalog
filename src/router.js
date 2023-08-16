@@ -1,34 +1,54 @@
-const {
-  handlePageNotFound,
-  handleCommentRequest,
-  handleGuestBookRequest,
-  handleStaticPageRequest,
-  handleMethodNotAllowed,
-  handleHomeRequest,
-} = require("./request-handler");
+const handlers = require("./request-handlers");
 
-const {
-  isNotValidUrl,
-  isNotValidMethod,
-  isRequestForComment,
-  isGuestBookRequest,
-  isHomeRequest,
-  isStaticPageRequest,
-} = require("./validators");
+const validators = require("./validators");
 
-const handleRoutes = (request, response, commentsHandler) => {
-  const validators = [
-    { validator: isNotValidUrl, handler: handlePageNotFound },
-    { validator: isNotValidMethod, handler: handleMethodNotAllowed },
-    { validator: isRequestForComment, handler: handleCommentRequest },
-    { validator: isGuestBookRequest, handler: handleGuestBookRequest },
-    { validator: isHomeRequest, handler: handleHomeRequest },
-    { validator: isStaticPageRequest, handler: handleStaticPageRequest },
+const handleGetRequest = (request, response, commentsStorage) => {
+  const routes = [
+    {
+      validator: validators.isNotValidUrl,
+      handler: handlers.handlePageNotFound,
+    },
+    {
+      validator: validators.isGuestBookRequest,
+      handler: handlers.handleGuestBookRequest,
+    },
+    {
+      validator: validators.isHomeRequest,
+      handler: handlers.handleHomeRequest,
+    },
   ];
 
-  const validator = validators.find(({ validator }) => validator(request));
+  const route = routes.find(({ validator }) => validator(request));
 
-  validator.handler(request, response, commentsHandler);
+  const handler = route ? route.handler : handlers.handleStaticPageRequest;
+  handler(request, response, commentsStorage);
+};
+
+const handlePostRequest = (request, response, commentsStorage) => {
+  const routes = [
+    {
+      validator: validators.isRequestForComment,
+      handler: handlers.handleCommentRequest,
+    },
+  ];
+
+  const route = routes.find(({ validator }) => validator(request));
+
+  route.handler(request, response, commentsStorage);
+};
+
+const handleRoutes = (request, response, commentsStorage) => {
+  if (validators.isNotValidMethod(request)) {
+    handlers.handleMethodNotAllowed(request, response);
+    return;
+  }
+
+  if (validators.isGetRequest(request.method)) {
+    handleGetRequest(request, response, commentsStorage);
+    return;
+  }
+
+  handlePostRequest(request, response, commentsStorage);
   return;
 };
 

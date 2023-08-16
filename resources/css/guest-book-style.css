@@ -61,10 +61,13 @@ fieldset {
 
 #name-text-box {
   padding: 0.5em;
+  width: 15em;
 }
 
 #comment-text-box {
   padding: 0.5em;
+  resize: none;
+  width: 15em;
 }
 
 #comment-display-area {

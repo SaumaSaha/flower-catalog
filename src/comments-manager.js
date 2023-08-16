@@ -12,11 +12,11 @@ class CommentsManager {
     return this.#fileSystem.existsSync(this.#filePath);
   }
 
-  #storeComments() {
+  #storeComments(onCommentAdd) {
     this.#fileSystem.writeFile(
       this.#filePath,
       JSON.stringify(this.#comments),
-      () => {}
+      onCommentAdd
     );
   }
 
@@ -33,9 +33,9 @@ class CommentsManager {
     );
   }
 
-  addComment(comment) {
+  addComment(comment, onCommentAdd) {
     this.#comments.unshift(comment);
-    this.#storeComments();
+    this.#storeComments(onCommentAdd);
   }
 
   getComments() {
