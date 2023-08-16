@@ -8,19 +8,19 @@ const isNotValidUrl = (request) => request.url.includes("..");
 const isNotValidMethod = (request) =>
   fs.existsSync(`./resources${request.url}`) && isPostRequest(request.method);
 
-const isGuestBookRequest = (request) =>
-  request.url === "/pages/guest-book.html";
+const isRequestForPostComment = (request) =>
+  request.url === "/pages/guest-book/comment" && isPostRequest(request.method);
 
-const isRequestForComment = (request) =>
-  request.url === "/pages/guest-book-entry";
+const isRequestForGetComments = (request) =>
+  request.url === "/pages/guest-book/comments" && isGetRequest(request.method);
 
 const isHomeRequest = (request) => request.url === "/";
 
 module.exports = {
   isNotValidUrl,
   isNotValidMethod,
-  isGuestBookRequest,
-  isRequestForComment,
+  isRequestForPostComment,
+  isRequestForGetComments,
   isHomeRequest,
   isGetRequest,
   isPostRequest,

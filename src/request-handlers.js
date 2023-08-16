@@ -1,5 +1,4 @@
 const fs = require("fs");
-const { createCommentsElement } = require("./html-generator");
 const GUEST_BOOK_HTML = fs.readFileSync(
   "./resources/pages/guest-book.html",
   "utf-8"
@@ -71,7 +70,13 @@ const getComment = (data) => {
   return Object.fromEntries(params.entries());
 };
 
-const handleCommentRequest = (request, response, commentsHandler) => {
+const handleGetCommentsRequest = (_, response, commentsHandler) => {
+  response.setHeader("content-type", "application/json");
+  response.statusCode = 200;
+  response.end(JSON.stringify(commentsHandler.getComments()));
+};
+
+const handlePostCommentRequest = (request, response, commentsHandler) => {
   let requestBody = "";
   const onCommentAdd = () => {
     response.writeHead(303, { location: "/pages/guest-book.html" });
@@ -86,16 +91,6 @@ const handleCommentRequest = (request, response, commentsHandler) => {
 
     commentsHandler.addComment(comment, onCommentAdd);
   });
-};
-
-const handleGuestBookRequest = (request, response, commentsHandler) => {
-  const placeholder = "All Comments";
-
-  const comments = commentsHandler.getComments();
-  const commentsElement = createCommentsElement(comments);
-  const content = GUEST_BOOK_HTML.replace(placeholder, commentsElement);
-
-  sendResponse(content, request, response);
 };
 
 const handleHomeRequest = (_, response) => {
@@ -117,8 +112,8 @@ const handleStaticPageRequest = (request, response) => {
 
 module.exports = {
   handleStaticPageRequest,
-  handleGuestBookRequest,
-  handleCommentRequest,
+  handlePostCommentRequest,
+  handleGetCommentsRequest,
   handleHomeRequest,
   handlePageNotFound,
   handleMethodNotAllowed,

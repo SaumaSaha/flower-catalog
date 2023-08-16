@@ -1,4 +1,4 @@
-class CommentsManager {
+class CommentsHandler {
   #fileSystem;
   #filePath;
   #comments;
@@ -20,7 +20,7 @@ class CommentsManager {
     );
   }
 
-  fetchComments() {
+  init() {
     if (this.#isFilePresent()) {
       const data = this.#fileSystem.readFileSync(this.#filePath, "utf-8");
       this.#comments = JSON.parse(data);
@@ -43,4 +43,4 @@ class CommentsManager {
   }
 }
 
-module.exports = { CommentsManager };
+module.exports = { CommentsHandler };

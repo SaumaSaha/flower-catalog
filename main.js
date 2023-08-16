@@ -1,16 +1,16 @@
 const http = require("node:http");
 const { handleRoutes } = require("./src/router");
-const { CommentsManager } = require("./src/comments-manager");
+const { CommentsHandler } = require("./src/comments-manager");
 const fs = require("node:fs");
 
 const main = () => {
   const commentsFilePath = "./comments.json";
-  const commentsManager = new CommentsManager(fs, commentsFilePath);
-  commentsManager.fetchComments();
+  const commentsHandler = new CommentsHandler(fs, commentsFilePath);
+  commentsHandler.init();
 
   const server = http.createServer((request, response) => {
     console.log(request.method, request.url);
-    handleRoutes(request, response, commentsManager);
+    handleRoutes(request, response, commentsHandler);
   });
 
   const port = 8000;
