@@ -21,12 +21,12 @@
       <form action="/pages/guest-book/comment" method="post" id="comment-form">
         <fieldset id="name-field">
           <label for="name-text-box">Name</label>
-          <input type="text" name="name" id="name-text-box" />
+          <input type="text" name="user-name" id="name-text-box" />
         </fieldset>
         <fieldset id="comment-field">
           <label for="comment-text-box">Comment</label>
           <textarea
-            name="comment"
+            name="text"
             id="comment-text-box"
             cols="25"
             rows="4"
@@ -39,7 +39,7 @@
         <header>
           <h1 id="comment-header">Comments</h1>
         </header>
-        <table id="comments"></table>
+        <div id="comments"></div>
       </section>
     </article>
   </body>

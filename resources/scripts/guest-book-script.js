@@ -22,9 +22,9 @@ const createTextElement = (text) => {
 };
 
 const createCommentElement = (comment) => {
-  const nameElement = createNameElement(comment.name);
-  const dateElement = createDateElement(comment.date);
-  const textElement = createTextElement(comment.comment);
+  const nameElement = createNameElement(comment["user-name"]);
+  const dateElement = createDateElement(comment.timeStamp);
+  const textElement = createTextElement(comment.text);
 
   const commentElement = document.createElement("p");
   commentElement.id = "comment";

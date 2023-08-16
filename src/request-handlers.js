@@ -87,7 +87,7 @@ const handlePostCommentRequest = (request, response, commentsHandler) => {
 
   request.on("end", () => {
     const comment = getComment(requestBody);
-    comment.date = new Date().toLocaleString();
+    comment.timeStamp = new Date().toLocaleString();
 
     commentsHandler.addComment(comment, onCommentAdd);
   });
