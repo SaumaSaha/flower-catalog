@@ -21,7 +21,7 @@
       <form id="comment-form">
         <fieldset id="name-field">
           <label for="name-text-box">Name</label>
-          <input type="text" name="user-name" id="name-text-box" />
+          <input type="text" name="user-name" id="name-text-box" required />
         </fieldset>
         <fieldset id="comment-field">
           <label for="comment-text-box">Comment</label>
@@ -30,6 +30,7 @@
             id="comment-text-box"
             cols="25"
             rows="4"
+            required
           ></textarea>
         </fieldset>
         <input type="submit" value="Submit" id="submit-button" />

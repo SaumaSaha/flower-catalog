@@ -44,7 +44,6 @@ const createCommentParams = () => {
 
 const showComments = (comments) => {
   const commentsContainer = document.querySelector("#comments");
-  console.log(comments);
 
   const commentElements = createCommentElements(comments);
   commentsContainer.replaceChildren();
@@ -52,19 +51,17 @@ const showComments = (comments) => {
 };
 
 const submitComment = (commentParams) => {
-  return fetch("/pages/guest-book/comment", {
+  const commentsContainer = document.querySelector("#comments");
+
+  fetch("/pages/guest-book/comment", {
     method: "POST",
     body: JSON.stringify(commentParams),
     headers: { "Content-Type": "application/json" },
   })
     .then((res) => res.json())
-    .then(({ commentSubmitted }) => {
-      if (commentSubmitted) {
-        fetchAndShowComments();
-        return;
-      }
-
-      console.log("Comment not submitted");
+    .then((comment) => {
+      const commentElement = createCommentElement(comment);
+      commentsContainer.prepend(commentElement);
     });
 };
 
@@ -76,14 +73,11 @@ const fetchAndShowComments = () => {
 
 const main = () => {
   const form = document.querySelector("#comment-form");
-  const submitButton = document.querySelector("#submit-button");
 
   form.onsubmit = (e) => {
     e.preventDefault();
-  };
-
-  submitButton.onclick = () => {
     const commentParams = createCommentParams();
+    form.reset();
     submitComment(commentParams);
   };
 

@@ -72,17 +72,17 @@ const handleGetCommentsRequest = (_, response, commentsHandler) => {
 
 const handlePostCommentRequest = (request, response, commentsHandler) => {
   let requestBody = "";
-  const onCommentAdd = () => {
-    const content = { commentSubmitted: true };
-    response.writeHead(200, { "content-type": "application/json" });
-    response.end(JSON.stringify(content));
-  };
 
   request.on("data", (data) => (requestBody += data));
 
   request.on("end", () => {
     const comment = JSON.parse(requestBody);
     comment.timeStamp = new Date().toLocaleString();
+
+    const onCommentAdd = () => {
+      response.writeHead(201, { "content-type": "application/json" });
+      response.end(JSON.stringify(comment));
+    };
 
     commentsHandler.addComment(comment, onCommentAdd);
   });
