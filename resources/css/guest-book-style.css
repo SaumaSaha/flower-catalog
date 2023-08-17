@@ -94,5 +94,6 @@ fieldset {
 }
 
 #comment > * {
-  width: 15em;
+  width: max-content;
+  text-align: center;
 }

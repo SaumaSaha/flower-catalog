@@ -33,18 +33,61 @@ const createCommentElement = (comment) => {
   return commentElement;
 };
 
-const createCommentsElement = (comments) => comments.map(createCommentElement);
+const createCommentElements = (comments) => comments.map(createCommentElement);
 
-const fetchAndShow = () => {
-  const commentsSection = document.querySelector("#comments");
+const createCommentParams = () => {
+  const userName = document.querySelector("#name-text-box").value;
+  const text = document.querySelector("#comment-text-box").value;
 
-  fetch("/pages/guest-book/comments")
+  return { "user-name": userName, text };
+};
+
+const showComments = (comments) => {
+  const commentsContainer = document.querySelector("#comments");
+  console.log(comments);
+
+  const commentElements = createCommentElements(comments);
+  commentsContainer.replaceChildren();
+  commentsContainer.append(...commentElements);
+};
+
+const submitComment = (commentParams) => {
+  return fetch("/pages/guest-book/comment", {
+    method: "POST",
+    body: JSON.stringify(commentParams),
+    headers: { "Content-Type": "application/json" },
+  })
     .then((res) => res.json())
-    .then((body) => {
-      const comments = createCommentsElement(body);
-      console.log(comments);
-      commentsSection.append(...comments);
+    .then(({ commentSubmitted }) => {
+      if (commentSubmitted) {
+        fetchAndShowComments();
+        return;
+      }
+
+      console.log("Comment not submitted");
     });
 };
 
-window.onload = fetchAndShow;
+const fetchAndShowComments = () => {
+  fetch("/pages/guest-book/comments")
+    .then((res) => res.json())
+    .then(showComments);
+};
+
+const main = () => {
+  const form = document.querySelector("#comment-form");
+  const submitButton = document.querySelector("#submit-button");
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+  };
+
+  submitButton.onclick = () => {
+    const commentParams = createCommentParams();
+    submitComment(commentParams);
+  };
+
+  fetchAndShowComments();
+};
+
+window.onload = main;

@@ -64,12 +64,6 @@ const handleMethodNotAllowed = (_, response) => {
   response.end(`Method Not Found`);
 };
 
-const getComment = (data) => {
-  const params = new URLSearchParams(data);
-
-  return Object.fromEntries(params.entries());
-};
-
 const handleGetCommentsRequest = (_, response, commentsHandler) => {
   response.setHeader("content-type", "application/json");
   response.statusCode = 200;
@@ -79,14 +73,15 @@ const handleGetCommentsRequest = (_, response, commentsHandler) => {
 const handlePostCommentRequest = (request, response, commentsHandler) => {
   let requestBody = "";
   const onCommentAdd = () => {
-    response.writeHead(303, { location: "/pages/guest-book.html" });
-    response.end();
+    const content = { commentSubmitted: true };
+    response.writeHead(200, { "content-type": "application/json" });
+    response.end(JSON.stringify(content));
   };
 
   request.on("data", (data) => (requestBody += data));
 
   request.on("end", () => {
-    const comment = getComment(requestBody);
+    const comment = JSON.parse(requestBody);
     comment.timeStamp = new Date().toLocaleString();
 
     commentsHandler.addComment(comment, onCommentAdd);
