@@ -1,11 +1,9 @@
 const fs = require("fs");
-const GUEST_BOOK_HTML = fs.readFileSync(
-  "./resources/pages/guest-book.html",
-  "utf-8"
-);
 
 const STATUS_CODES = {
   ok: 200,
+  created: 201,
+  found: 302,
   notFound: 404,
   serverError: 500,
   methodNotAllowed: 405,
@@ -61,12 +59,12 @@ const handlePageNotFound = (request, response) => {
 
 const handleMethodNotAllowed = (_, response) => {
   response.statusCode = STATUS_CODES.methodNotAllowed;
-  response.end(`Method Not Found`);
+  response.end("Method Not Found");
 };
 
 const handleGetCommentsRequest = (_, response, commentsHandler) => {
   response.setHeader("content-type", "application/json");
-  response.statusCode = 200;
+  response.statusCode = STATUS_CODES.ok;
   response.end(JSON.stringify(commentsHandler.getComments()));
 };
 
@@ -80,7 +78,9 @@ const handlePostCommentRequest = (request, response, commentsHandler) => {
     comment.timeStamp = new Date().toLocaleString();
 
     const onCommentAdd = () => {
-      response.writeHead(201, { "content-type": "application/json" });
+      response.writeHead(STATUS_CODES.created, {
+        "content-type": "application/json",
+      });
       response.end(JSON.stringify(comment));
     };
 
@@ -89,7 +89,7 @@ const handlePostCommentRequest = (request, response, commentsHandler) => {
 };
 
 const handleHomeRequest = (_, response) => {
-  response.writeHead(302, { location: "/pages/index.html" });
+  response.writeHead(STATUS_CODES.found, { location: "/pages/index.html" });
   response.end();
 };
 
