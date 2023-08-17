@@ -35,7 +35,7 @@ const createCommentElement = (comment) => {
 
 const createCommentElements = (comments) => comments.map(createCommentElement);
 
-const createCommentParams = () => {
+const createCommentDetails = () => {
   const userName = document.querySelector("#name-text-box").value;
   const text = document.querySelector("#comment-text-box").value;
 
@@ -46,7 +46,6 @@ const showComments = (comments) => {
   const commentsContainer = document.querySelector("#comments");
 
   const commentElements = createCommentElements(comments);
-  commentsContainer.replaceChildren();
   commentsContainer.append(...commentElements);
 };
 
@@ -76,9 +75,9 @@ const main = () => {
 
   form.onsubmit = (e) => {
     e.preventDefault();
-    const commentParams = createCommentParams();
+    const commentDetails = createCommentDetails();
     form.reset();
-    submitComment(commentParams);
+    submitComment(commentDetails);
   };
 
   fetchAndShowComments();
