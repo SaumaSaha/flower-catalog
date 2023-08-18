@@ -22,7 +22,7 @@ const createTextElement = (text) => {
 };
 
 const createCommentElement = (comment) => {
-  const nameElement = createNameElement(comment["user-name"]);
+  const nameElement = createNameElement(comment["username"]);
   const dateElement = createDateElement(comment.timeStamp);
   const textElement = createTextElement(comment.text);
 
@@ -72,6 +72,13 @@ const submitComment = (commentParams) => {
   }).then(validateResponse);
 };
 
+const submitLogoutRequest = () => {
+  fetch("/logout", { method: "POST" }).then((res) => {
+    const location = res.headers.get("location");
+    window.location.replace(location);
+  });
+};
+
 const fetchAndShowComments = () => {
   fetch("/pages/guest-book/comments")
     .then((res) => res.json())
@@ -80,6 +87,12 @@ const fetchAndShowComments = () => {
 
 const main = () => {
   const form = document.querySelector("#comment-form");
+  const logout = document.querySelector("#logout");
+
+  logout.onclick = (e) => {
+    e.preventDefault();
+    submitLogoutRequest();
+  };
 
   form.onsubmit = (e) => {
     e.preventDefault();

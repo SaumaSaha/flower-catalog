@@ -13,7 +13,6 @@
   padding: 0.5em;
   font-size: 1.5em;
   color: orange;
-  border-bottom: 1px solid black;
   text-align: center;
   display: flex;
   justify-content: center;
@@ -38,6 +37,15 @@
 
 #comment-form > * :nth-child(1) {
   width: 40%;
+}
+
+.header-container {
+  padding: 0.5em;
+  display: grid;
+  grid-template: 100% /90% 10%;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid black;
 }
 
 fieldset {

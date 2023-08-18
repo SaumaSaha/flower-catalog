@@ -12,14 +12,14 @@ const sendResponse = (content, request, response) => {
 };
 
 const isUserLoggedIn = (req) => {
-  return "user-name" in req.cookies;
+  return "username" in req.cookies;
 };
 
 const onChunkEnd = (request, requestBody, response) => {
   const { commentsHandler } = request;
   const comment = JSON.parse(requestBody);
   comment.timeStamp = new Date().toLocaleString();
-  comment["user-name"] = request.cookies["user-name"];
+  comment["username"] = request.cookies["username"];
 
   const onCommentAdd = () => {
     response.writeHead(STATUS_CODES.created, {
@@ -88,10 +88,17 @@ const handleLoginRequest = (request, response) => {
   });
 
   request.on("end", () => {
-    const name = new URLSearchParams(reqBody).get("user-name");
-    response.setHeader("set-cookie", `user-name=${name}`);
+    const name = new URLSearchParams(reqBody).get("username");
+    response.setHeader("set-cookie", `username=${name}`);
     redirectToGuestBookPage(request, response);
   });
+};
+
+const handleLogoutRequest = (_, response) => {
+  response.statusCode = STATUS_CODES.ok;
+  response.setHeader("set-cookie", "username=; max-age=0");
+  response.setHeader("location", "/pages/index.html");
+  response.end();
 };
 
 const handleGuestBookPageRequest = (request, response) => {
@@ -122,5 +129,6 @@ module.exports = {
   handleGuestBookPageRequest,
   handleHomeRequest,
   handleLoginRequest,
+  handleLogoutRequest,
   handleMethodNotAllowed,
 };

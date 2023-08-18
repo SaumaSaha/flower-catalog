@@ -8,6 +8,7 @@ const {
   handleLoginRequest,
   handleMethodNotAllowed,
   handleStaticPageRequest,
+  handleLogoutRequest,
 } = require("./request-handlers");
 
 const createRouter = () => {
@@ -30,6 +31,7 @@ const createRouter = () => {
     handleGuestBookPageRequest
   );
   router.addHandler("POST", "^/login$", handleLoginRequest);
+  router.addHandler("POST", "^/logout$", handleLogoutRequest);
   router.addHandler("GET", "^.*$", handleStaticPageRequest);
   router.addHandler("POST", "^.*$", handleMethodNotAllowed);
 
