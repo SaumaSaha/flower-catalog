@@ -48,19 +48,28 @@ const showComments = (comments) => {
   commentsContainer.append(...commentElements);
 };
 
-const submitComment = (commentParams) => {
+const appendComment = (comment) => {
   const commentsContainer = document.querySelector("#comments");
 
+  const commentElement = createCommentElement(comment);
+  commentsContainer.prepend(commentElement);
+};
+
+const validateResponse = (res) => {
+  if (res.status === 401) {
+    const location = res.headers.get("location");
+    window.location.replace(location);
+    return;
+  }
+  res.json().then(appendComment);
+};
+
+const submitComment = (commentParams) => {
   fetch("/pages/guest-book/comment", {
     method: "POST",
     body: JSON.stringify(commentParams),
     headers: { "Content-Type": "application/json" },
-  })
-    .then((res) => res.json())
-    .then((comment) => {
-      const commentElement = createCommentElement(comment);
-      commentsContainer.prepend(commentElement);
-    });
+  }).then(validateResponse);
 };
 
 const fetchAndShowComments = () => {

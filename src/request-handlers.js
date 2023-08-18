@@ -57,6 +57,18 @@ const isUserLoggedIn = (req) => {
   return "user-name" in req.cookies;
 };
 
+const redirectToLoginPage = (request, response) => {
+  response.statusCode = STATUS_CODES.seeOther;
+  response.setHeader("location", "/pages/login.html");
+  response.end();
+};
+
+const redirectToGuestBookPage = (request, response) => {
+  response.statusCode = STATUS_CODES.seeOther;
+  response.setHeader("location", "/pages/guest-book.html");
+  response.end();
+};
+
 const handlePageNotFound = (request, response) => {
   response.statusCode = STATUS_CODES.notFound;
   response.end(`${request.url} Not Found`);
@@ -74,6 +86,12 @@ const handleGetCommentsRequest = (_, response, commentsHandler) => {
 };
 
 const handlePostCommentRequest = (request, response, commentsHandler) => {
+  if (!isUserLoggedIn(request)) {
+    response.statusCode = 401;
+    response.setHeader("location", "/pages/login.html");
+    response.end();
+    return;
+  }
   let requestBody = "";
 
   request.on("data", (data) => (requestBody += data));
@@ -107,10 +125,8 @@ const handleLogin = (request, response) => {
 
   request.on("end", () => {
     const name = new URLSearchParams(reqBody).get("user-name");
-    response.statusCode = STATUS_CODES.seeOther;
     response.setHeader("set-cookie", `user-name=${name}`);
-    response.setHeader("location", "/pages/guest-book.html");
-    response.end();
+    redirectToGuestBookPage(request, response);
   });
 };
 
@@ -120,9 +136,7 @@ const handleGuestBookPageRequest = (request, response) => {
     return;
   }
 
-  response.statusCode = STATUS_CODES.seeOther;
-  response.setHeader("location", "/pages/login.html");
-  response.end();
+  redirectToLoginPage(request, response);
 };
 
 const handleStaticPageRequest = (request, response) => {
