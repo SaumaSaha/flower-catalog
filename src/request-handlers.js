@@ -15,6 +15,22 @@ const isUserLoggedIn = (req) => {
   return "user-name" in req.cookies;
 };
 
+const onChunkEnd = (request, requestBody, response) => {
+  const { commentsHandler } = request;
+  const comment = JSON.parse(requestBody);
+  comment.timeStamp = new Date().toLocaleString();
+  comment["user-name"] = request.cookies["user-name"];
+
+  const onCommentAdd = () => {
+    response.writeHead(STATUS_CODES.created, {
+      "content-type": "application/json",
+    });
+    response.end(JSON.stringify(comment));
+  };
+
+  commentsHandler.addComment(comment, onCommentAdd);
+};
+
 const redirectToLoginPage = (_, response) => {
   response.statusCode = STATUS_CODES.seeOther;
   response.setHeader("location", "/pages/login.html");
@@ -44,22 +60,6 @@ const handleGetCommentsRequest = (request, response) => {
   response.end(JSON.stringify(commentsHandler.getComments()));
 };
 
-const onChunkEnd = (request, requestBody, response) => {
-  const { commentsHandler } = request;
-  const comment = JSON.parse(requestBody);
-  comment.timeStamp = new Date().toLocaleString();
-  comment["user-name"] = request.cookies["user-name"];
-
-  const onCommentAdd = () => {
-    response.writeHead(STATUS_CODES.created, {
-      "content-type": "application/json",
-    });
-    response.end(JSON.stringify(comment));
-  };
-
-  commentsHandler.addComment(comment, onCommentAdd);
-};
-
 const handlePostCommentRequest = (request, response) => {
   if (!isUserLoggedIn(request)) {
     response.statusCode = 401;
@@ -81,7 +81,7 @@ const handleHomeRequest = (_, response) => {
   response.end();
 };
 
-const handleLogin = (request, response) => {
+const handleLoginRequest = (request, response) => {
   let reqBody = "";
   request.on("data", (data) => {
     reqBody += data;
@@ -121,7 +121,6 @@ module.exports = {
   handleGetCommentsRequest,
   handleGuestBookPageRequest,
   handleHomeRequest,
-  handleLogin,
-  handlePageNotFound,
+  handleLoginRequest,
   handleMethodNotAllowed,
 };

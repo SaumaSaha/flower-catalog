@@ -1,45 +1,24 @@
-const handlers = require("./request-handlers");
-
-const validators = require("./validators");
-
-const handleRoutes = (request, response, commentsHandler) => {
-  if (validators.isNotValidMethod(request)) {
-    handlers.handleMethodNotAllowed(request, response);
-    return;
+class Router {
+  #handlers;
+  constructor() {
+    this.#handlers = [];
   }
 
-  if (validators.isNotValidUrl(request)) {
-    handlers.handlePageNotFound(request, response);
-    return;
+  addHandler(method, route, handler) {
+    this.#handlers.push({ method, route, handler });
   }
 
-  const routes = [
-    {
-      validator: validators.isRequestForPostComment,
-      handler: handlers.handlePostCommentRequest,
-    },
-    {
-      validator: validators.isRequestForGetComments,
-      handler: handlers.handleGetCommentsRequest,
-    },
-    {
-      validator: validators.isHomeRequest,
-      handler: handlers.handleHomeRequest,
-    },
-    {
-      validator: validators.isRequestForGuestBookPage,
-      handler: handlers.handleGuestBookPageRequest,
-    },
-    {
-      validator: validators.isLoginRequest,
-      handler: handlers.handleLogin,
-    },
-  ];
+  route(request, response) {
+    const { handler } = this.#handlers.find(({ method, route }) => {
+      const routeRegex = new RegExp(route);
 
-  const route = routes.find(({ validator }) => validator(request));
+      return method === "ANY"
+        ? routeRegex.test(request.url)
+        : routeRegex.test(request.url) && method === request.method;
+    });
 
-  const handler = route ? route.handler : handlers.handleStaticPageRequest;
-  handler(request, response, commentsHandler);
-};
+    handler(request, response);
+  }
+}
 
-module.exports = { handleRoutes };
+module.exports = { Router };

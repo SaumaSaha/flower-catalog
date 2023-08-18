@@ -1,7 +1,8 @@
-const http = require("node:http");
-const { handleRoutes } = require("./src/router");
-const { CommentsHandler } = require("./src/comments-manager");
 const fs = require("node:fs");
+const http = require("node:http");
+
+const { CommentsHandler } = require("./src/comments-manager");
+const { createRouter } = require("./src/router-creator");
 const COMMENTS_FILE_PATH = "./comments.json";
 
 const parseCookies = (cookieParams = "") => {
@@ -13,13 +14,14 @@ const parseCookies = (cookieParams = "") => {
 const main = () => {
   const commentsHandler = new CommentsHandler(fs, COMMENTS_FILE_PATH);
   commentsHandler.init();
+  const router = createRouter();
 
   const server = http.createServer((request, response) => {
     console.log(request.method, request.url);
     request.cookies = parseCookies(request.headers.cookie);
     request.commentsHandler = commentsHandler;
 
-    handleRoutes(request, response);
+    router.route(request, response);
   });
 
   const port = 8000;
