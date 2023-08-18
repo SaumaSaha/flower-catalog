@@ -37,9 +37,9 @@ const redirectToLoginPage = (_, response) => {
   response.end();
 };
 
-const redirectToGuestBookPage = (_, response) => {
+const redirectToHomePage = (_, response) => {
   response.statusCode = STATUS_CODES.seeOther;
-  response.setHeader("location", "/pages/guest-book.html");
+  response.setHeader("location", "/");
   response.end();
 };
 
@@ -90,7 +90,7 @@ const handleLoginRequest = (request, response) => {
   request.on("end", () => {
     const name = new URLSearchParams(reqBody).get("username");
     response.setHeader("set-cookie", `username=${name}`);
-    redirectToGuestBookPage(request, response);
+    redirectToHomePage(request, response);
   });
 };
 
@@ -99,6 +99,14 @@ const handleLogoutRequest = (_, response) => {
   response.setHeader("set-cookie", "username=; max-age=0");
   response.setHeader("location", "/pages/index.html");
   response.end();
+};
+
+const handleLoginStatusRequest = (request, response) => {
+  const loggedIn = request.cookies.username ? true : false;
+  const username = request.cookies.username;
+  response.statusCode = STATUS_CODES.ok;
+  response.setHeader("content-type", "application/json");
+  response.end(JSON.stringify({ loggedIn, username }));
 };
 
 const handleGuestBookPageRequest = (request, response) => {
@@ -131,4 +139,5 @@ module.exports = {
   handleLoginRequest,
   handleLogoutRequest,
   handleMethodNotAllowed,
+  handleLoginStatusRequest,
 };

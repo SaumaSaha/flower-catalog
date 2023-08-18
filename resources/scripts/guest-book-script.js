@@ -55,6 +55,18 @@ const appendComment = (comment) => {
   commentsContainer.prepend(commentElement);
 };
 
+const createGreetElement = (name) => {
+  const nameElement = document.createElement("h3");
+  nameElement.innerText = name;
+  return nameElement;
+};
+
+const showUserName = ({ username }) => {
+  const authSection = document.querySelector("#auth-section");
+  const nameElement = createGreetElement(username);
+  authSection.prepend(nameElement);
+};
+
 const validateResponse = (res) => {
   if (res.status === 401) {
     const location = res.headers.get("location");
@@ -85,6 +97,12 @@ const fetchAndShowComments = () => {
     .then(showComments);
 };
 
+const fetchUserAndShow = () => {
+  fetch("/login-status")
+    .then((res) => res.json())
+    .then(showUserName);
+};
+
 const main = () => {
   const form = document.querySelector("#comment-form");
   const logout = document.querySelector("#logout");
@@ -100,6 +118,8 @@ const main = () => {
     form.reset();
     submitComment(commentDetails);
   };
+
+  fetchUserAndShow();
 
   fetchAndShowComments();
 };

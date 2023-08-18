@@ -48,6 +48,11 @@
   border-bottom: 1px solid black;
 }
 
+#auth-section {
+  display: flex;
+  gap: 1em;
+}
+
 fieldset {
   border: none;
 }
