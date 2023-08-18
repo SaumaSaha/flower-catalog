@@ -4,6 +4,7 @@ const STATUS_CODES = {
   ok: 200,
   created: 201,
   found: 302,
+  seeOther: 303,
   notFound: 404,
   serverError: 500,
   methodNotAllowed: 405,
@@ -52,6 +53,10 @@ const sendResponse = (content, request, response) => {
   response.end(content);
 };
 
+const isUserLoggedIn = (req) => {
+  return "user-name" in req.cookies;
+};
+
 const handlePageNotFound = (request, response) => {
   response.statusCode = STATUS_CODES.notFound;
   response.end(`${request.url} Not Found`);
@@ -76,6 +81,7 @@ const handlePostCommentRequest = (request, response, commentsHandler) => {
   request.on("end", () => {
     const comment = JSON.parse(requestBody);
     comment.timeStamp = new Date().toLocaleString();
+    comment["user-name"] = request.cookies["user-name"];
 
     const onCommentAdd = () => {
       response.writeHead(STATUS_CODES.created, {
@@ -89,7 +95,33 @@ const handlePostCommentRequest = (request, response, commentsHandler) => {
 };
 
 const handleHomeRequest = (_, response) => {
-  response.writeHead(STATUS_CODES.found, { location: "/pages/index.html" });
+  response.writeHead(STATUS_CODES.seeOther, { location: "/pages/index.html" });
+  response.end();
+};
+
+const handleLogin = (request, response) => {
+  let reqBody = "";
+  request.on("data", (data) => {
+    reqBody += data;
+  });
+
+  request.on("end", () => {
+    const name = new URLSearchParams(reqBody).get("user-name");
+    response.statusCode = STATUS_CODES.seeOther;
+    response.setHeader("set-cookie", `user-name=${name}`);
+    response.setHeader("location", "/pages/guest-book.html");
+    response.end();
+  });
+};
+
+const handleGuestBookPageRequest = (request, response) => {
+  if (isUserLoggedIn(request)) {
+    handleStaticPageRequest(request, response);
+    return;
+  }
+
+  response.statusCode = STATUS_CODES.seeOther;
+  response.setHeader("location", "/pages/login.html");
   response.end();
 };
 
@@ -109,7 +141,9 @@ module.exports = {
   handleStaticPageRequest,
   handlePostCommentRequest,
   handleGetCommentsRequest,
+  handleGuestBookPageRequest,
   handleHomeRequest,
+  handleLogin,
   handlePageNotFound,
   handleMethodNotAllowed,
 };

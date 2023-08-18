@@ -14,6 +14,12 @@ const isRequestForPostComment = (request) =>
 const isRequestForGetComments = (request) =>
   request.url === "/pages/guest-book/comments" && isGetRequest(request.method);
 
+const isRequestForGuestBookPage = (request) =>
+  request.url === "/pages/guest-book.html" && isGetRequest(request.method);
+
+const isLoginRequest = (request) =>
+  request.url === "/login" && isPostRequest(request.method);
+
 const isHomeRequest = (request) => request.url === "/";
 
 module.exports = {
@@ -21,7 +27,9 @@ module.exports = {
   isNotValidMethod,
   isRequestForPostComment,
   isRequestForGetComments,
+  isRequestForGuestBookPage,
   isHomeRequest,
+  isLoginRequest,
   isGetRequest,
   isPostRequest,
 };

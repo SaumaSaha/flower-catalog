@@ -26,6 +26,14 @@ const handleRoutes = (request, response, commentsHandler) => {
       validator: validators.isHomeRequest,
       handler: handlers.handleHomeRequest,
     },
+    {
+      validator: validators.isRequestForGuestBookPage,
+      handler: handlers.handleGuestBookPageRequest,
+    },
+    {
+      validator: validators.isLoginRequest,
+      handler: handlers.handleLogin,
+    },
   ];
 
   const route = routes.find(({ validator }) => validator(request));

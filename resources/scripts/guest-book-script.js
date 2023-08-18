@@ -36,10 +36,9 @@ const createCommentElement = (comment) => {
 const createCommentElements = (comments) => comments.map(createCommentElement);
 
 const createCommentDetails = () => {
-  const userName = document.querySelector("#name-text-box").value;
   const text = document.querySelector("#comment-text-box").value;
 
-  return { "user-name": userName, text };
+  return { text };
 };
 
 const showComments = (comments) => {
