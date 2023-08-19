@@ -77,7 +77,7 @@ const handlePostCommentRequest = (request, response) => {
 };
 
 const handleHomeRequest = (_, response) => {
-  response.writeHead(STATUS_CODES.seeOther, { location: "/pages/index.html" });
+  response.writeHead(STATUS_CODES.seeOther, { location: "/index.html" });
   response.end();
 };
 
@@ -97,7 +97,7 @@ const handleLoginRequest = (request, response) => {
 const handleLogoutRequest = (_, response) => {
   response.statusCode = STATUS_CODES.ok;
   response.setHeader("set-cookie", "username=; max-age=0");
-  response.setHeader("location", "/pages/index.html");
+  response.setHeader("location", "/index.html");
   response.end();
 };
 

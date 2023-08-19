@@ -9,7 +9,6 @@ const {
   handleMethodNotAllowed,
   handleStaticPageRequest,
   handleLogoutRequest,
-  handleUserNameRequest,
   handleLoginStatusRequest,
 } = require("./request-handlers");
 
