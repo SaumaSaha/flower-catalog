@@ -18,7 +18,7 @@
 .header-container {
   width: 100%;
   display: grid;
-  grid-template: 100% / 90% 10%;
+  grid-template: 100% / 85% 15%;
   grid-template-areas: "header auth";
   align-items: center;
   border-bottom: 1px solid black;

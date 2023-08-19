@@ -14,6 +14,7 @@ const submitLogoutRequest = () => {
 const createLogoutElement = () => {
   const logoutElement = document.createElement("a");
   logoutElement.innerText = "Logout";
+  logoutElement.href = "";
 
   logoutElement.onclick = (e) => {
     e.preventDefault();
