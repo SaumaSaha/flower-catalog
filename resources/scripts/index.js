@@ -6,8 +6,11 @@ const createGreetElement = (text) => {
 
 const submitLogoutRequest = () => {
   fetch("/logout", { method: "POST" }).then((res) => {
-    const location = res.headers.get("location");
-    window.location.replace(location);
+    if (res.redirected) {
+      console.log(res.url);
+      location.replace(res.url);
+      return;
+    }
   });
 };
 

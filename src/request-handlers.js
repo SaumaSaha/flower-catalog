@@ -1,141 +1,75 @@
-const fs = require("fs");
-const { getHeaders, STATUS_CODES } = require("./utils");
+const { STATUS_CODES } = require("./utils");
+const pwd = process.env.PWD;
 
-const sendResponse = (content, request, response) => {
-  const headers = getHeaders(request.url);
-
-  Object.entries(headers).forEach(([name, value]) => {
-    response.setHeader(name, value);
-  });
-
-  response.end(content);
+const isUserLoggedIn = (request) => {
+  return "username" in request.cookies;
 };
 
-const isUserLoggedIn = (req) => {
-  return "username" in req.cookies;
+const handleMethodNotAllowed = (_, response) => {
+  response.status(STATUS_CODES.methodNotAllowed).send("Method Not Found");
 };
 
-const onChunkEnd = (request, requestBody, response) => {
-  const { commentsHandler } = request;
-  const comment = JSON.parse(requestBody);
+const handleGetCommentsRequest = (request, response) => {
+  const { commentsHandler } = request.app;
+
+  response.status(STATUS_CODES.ok).json(commentsHandler.getComments());
+};
+
+const handlePostCommentRequest = (request, response) => {
+  if (!isUserLoggedIn(request)) {
+    response.status(STATUS_CODES.unauthorized);
+    response.redirect("/pages/login.html");
+    return;
+  }
+  const { commentsHandler } = request.app;
+
+  const comment = request.body;
+
   comment.timeStamp = new Date().toLocaleString();
-  comment["username"] = request.cookies["username"];
+  comment.username = request.cookies.username;
 
   const onCommentAdd = () => {
-    response.writeHead(STATUS_CODES.created, {
-      "content-type": "application/json",
-    });
-    response.end(JSON.stringify(comment));
+    response.status(STATUS_CODES.created).json(comment);
   };
 
   commentsHandler.addComment(comment, onCommentAdd);
 };
 
-const redirectToLoginPage = (_, response) => {
-  response.statusCode = STATUS_CODES.seeOther;
-  response.setHeader("location", "/pages/login.html");
-  response.end();
-};
-
-const redirectToHomePage = (_, response) => {
-  response.statusCode = STATUS_CODES.seeOther;
-  response.setHeader("location", "/");
-  response.end();
-};
-
-const handlePageNotFound = (request, response) => {
-  response.statusCode = STATUS_CODES.notFound;
-  response.end(`${request.url} Not Found`);
-};
-
-const handleMethodNotAllowed = (_, response) => {
-  response.statusCode = STATUS_CODES.methodNotAllowed;
-  response.end("Method Not Found");
-};
-
-const handleGetCommentsRequest = (request, response) => {
-  const { commentsHandler } = request;
-  response.setHeader("content-type", "application/json");
-  response.statusCode = STATUS_CODES.ok;
-  response.end(JSON.stringify(commentsHandler.getComments()));
-};
-
-const handlePostCommentRequest = (request, response) => {
-  if (!isUserLoggedIn(request)) {
-    response.statusCode = 401;
-    response.setHeader("location", "/pages/login.html");
-    response.end();
-    return;
-  }
-  let requestBody = "";
-
-  request.on("data", (data) => (requestBody += data));
-
-  request.on("end", () => {
-    onChunkEnd(request, requestBody, response);
-  });
-};
-
-const handleHomeRequest = (_, response) => {
-  response.writeHead(STATUS_CODES.seeOther, { location: "/index.html" });
-  response.end();
-};
-
 const handleLoginRequest = (request, response) => {
-  let reqBody = "";
-  request.on("data", (data) => {
-    reqBody += data;
-  });
+  const { username } = request.body;
 
-  request.on("end", () => {
-    const name = new URLSearchParams(reqBody).get("username");
-    response.setHeader("set-cookie", `username=${name}`);
-    redirectToHomePage(request, response);
-  });
+  response.cookie("username", username);
+  response.redirect(STATUS_CODES.seeOther, "/");
 };
 
 const handleLogoutRequest = (_, response) => {
-  response.statusCode = STATUS_CODES.ok;
-  response.setHeader("set-cookie", "username=; max-age=0");
-  response.setHeader("location", "/index.html");
-  response.end();
+  response.clearCookie("username");
+  response.redirect(STATUS_CODES.seeOther, "/");
 };
 
 const handleLoginStatusRequest = (request, response) => {
-  const loggedIn = request.cookies.username ? true : false;
-  const username = request.cookies.username;
-  response.statusCode = STATUS_CODES.ok;
-  response.setHeader("content-type", "application/json");
-  response.end(JSON.stringify({ loggedIn, username }));
+  if (request.cookies.username) {
+    const username = request.cookies.username;
+    response.json({ loggedIn: true, username });
+    return;
+  }
+
+  response.json({ loggedIn: false, username: null });
 };
 
 const handleGuestBookPageRequest = (request, response) => {
   if (isUserLoggedIn(request)) {
-    handleStaticPageRequest(request, response);
+    response.sendFile(pwd + "/resources/pages/guest-book.html");
     return;
   }
 
-  redirectToLoginPage(request, response);
-};
-
-const handleStaticPageRequest = (request, response) => {
-  const filePath = `./resources${request.url}`;
-
-  fs.readFile(filePath, (error, content) => {
-    if (error) {
-      handlePageNotFound(request, response);
-      return;
-    }
-    sendResponse(content, request, response);
-  });
+  response.redirect(303, "/pages/login.html");
 };
 
 module.exports = {
-  handleStaticPageRequest,
   handlePostCommentRequest,
   handleGetCommentsRequest,
   handleGuestBookPageRequest,
-  handleHomeRequest,
   handleLoginRequest,
   handleLogoutRequest,
   handleMethodNotAllowed,

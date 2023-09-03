@@ -77,7 +77,7 @@ const validateResponse = (res) => {
 };
 
 const submitComment = (commentParams) => {
-  fetch("/pages/guest-book/comment", {
+  fetch("/guest-book/comment", {
     method: "POST",
     body: JSON.stringify(commentParams),
     headers: { "Content-Type": "application/json" },
@@ -86,13 +86,16 @@ const submitComment = (commentParams) => {
 
 const submitLogoutRequest = () => {
   fetch("/logout", { method: "POST" }).then((res) => {
-    const location = res.headers.get("location");
-    window.location.replace(location);
+    if (res.redirected) {
+      console.log(res.url);
+      location.replace(res.url);
+      return;
+    }
   });
 };
 
 const fetchAndShowComments = () => {
-  fetch("/pages/guest-book/comments")
+  fetch("/guest-book/comments")
     .then((res) => res.json())
     .then(showComments);
 };
